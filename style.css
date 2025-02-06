@@ -1,0 +1,565 @@
+/* 基础样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+
+body {
+    background: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+h1 {
+    color: #1a73e8;
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2.2em;
+}
+
+/* 表单样式 */
+#postForm {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+button {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+button:hover {
+    background: #1557b0;
+}
+
+/* 帖子列表样式 */
+#postsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.post-item {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.post-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.post-item h3 {
+    color: #1a73e8;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.post-meta {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.post-content {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.playstyles {
+    color: #555;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.contact-info {
+    color: #333;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+.view-detail-btn {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+    margin-top: auto;
+    width: 100%;
+}
+
+.view-detail-btn:hover {
+    background: #1557a5;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+    .filter-section {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    #postsList {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-section {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    #postsList {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-section, #postsList {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 添加玩法复选框样式 */
+.playstyle-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.playstyle-checkboxes label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.playstyle-checkboxes input {
+    margin-right: 5px;
+}
+
+/* 添加导航按钮样式 */
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.nav-buttons button {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: auto;
+}
+
+.nav-buttons button:hover {
+    background: #1557a5;
+}
+
+/* 添加搜索和筛选样式 */
+.search-filter {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-filter .form-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-filter input[type="text"] {
+    flex: 1 1 300px;
+    min-width: 200px;
+}
+
+.search-filter label {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.filter-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.filter-column {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+    min-height: 300px;
+    break-inside: avoid;
+}
+
+.filter-column h3 {
+    color: #1a73e8;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #1a73e8;
+    display: flex;
+    align-items: center;
+}
+
+.filter-column h3::before {
+    content: "▶";
+    margin-right: 8px;
+    font-size: 0.8em;
+    color: #666;
+}
+
+select[multiple] {
+    height: 120px;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* 添加搜索按钮样式 */
+#searchButton {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#searchButton:hover {
+    background: #1557a5;
+}
+
+/* 调整复选框布局 */
+.version-checkboxes,
+.loader-checkboxes,
+.connection-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+}
+
+/* 添加时间筛选样式 */
+.time-filter {
+    margin-top: 15px;
+}
+
+.quick-time-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.quick-time-buttons button,
+.custom-time button {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f5f5f5;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+}
+
+.quick-time-buttons button.active,
+.custom-time button.active {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+}
+
+.quick-time-buttons button:hover,
+.custom-time button:hover {
+    background: #e0e0e0;
+}
+
+.custom-time {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.custom-time input {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.custom-time button {
+    padding: 5px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.custom-time button:hover {
+    background: #1557a5;
+}
+
+/* 修改时间按钮激活状态 */
+.quick-time-buttons button.active {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+    position: relative;
+}
+
+.quick-time-buttons button.active::after {
+    content: "✓";
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+/* 宽屏优化 */
+@media (min-width: 1200px) {
+    .filter-section {
+        grid-template-columns: repeat(4, 1fr); /* 宽屏时显示4列 */
+    }
+
+    #postsList {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* 宽屏时帖子宽度更大 */
+    }
+}
+
+/* 超大屏优化 */
+@media (min-width: 1600px) {
+    .filter-section {
+        grid-template-columns: repeat(5, 1fr); /* 超大屏时显示5列 */
+    }
+
+    #postsList {
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* 超大屏时帖子宽度更大 */
+    }
+}
+
+.container {
+    background: transparent; /* 移除背景白板 */
+    box-shadow: none; /* 移除阴影 */
+    padding: 0; /* 移除内边距 */
+    max-width: 100%; /* 移除最大宽度限制 */
+}
+
+#customRetentionTime {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#customRetentionTime input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#customRetentionTime button {
+    padding: 8px 16px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#customRetentionTime input:invalid {
+    border-color: red;
+}
+
+#customConnectionInput {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#customConnectionInput input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#customConnectionInput button {
+    padding: 6px 12px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.save-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* 新增存档类型筛选样式 */
+.save-checkboxes label {
+    display: block;
+    margin: 5px 0;
+}
+
+#saveType {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 快捷全选按钮 */
+.quick-select-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.quick-select-buttons button {
+    padding: 5px 10px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* 举报按钮 */
+.report-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+.report-btn:hover {
+    background: #cc0000;
+}
+
+.report-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.select-all {
+    font-weight: bold;
+    color: #1a73e8;
+}
+
+.select-all + label {
+    margin-top: 5px;
+}
+
+.report-status {
+    color: #ff4444;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 5px;
+    background: #ffe6e6;
+    border-radius: 4px;
+}
+
+.restore-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+.restore-btn:hover {
+    background: #45a049;
+}
+
+/* 加载状态 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>认证回调</title>
+    <script src="https://alcdn.msauth.net/browser/2.24.0/js/msal-browser.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <script>
+        msalInstance.handleRedirectPromise().then(response => {
+            if (response) {
+                window.opener.postMessage({
+                    type: 'MSAL_LOGIN_SUCCESS',
+                    payload: response
+                }, '*');
+            }
+            window.close();
+        }).catch(error => {
+            console.error('认证错误:', error);
+            window.close();
+        });
+    </script>
+</body>
+</html> 
