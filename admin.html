@@ -98,6 +98,7 @@
                 <div class="filter-column">
                     <h3>举报状态</h3>
                     <div class="report-checkboxes">
+                        <label><input type="checkbox" class="select-all" data-group="filter-report"> 全选</label>
                         <label><input type="checkbox" name="filter-report" value="已举报"> 已举报</label>
                         <label><input type="checkbox" name="filter-report" value="未举报"> 未举报</label>
                     </div>
@@ -146,10 +147,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             // 检查管理员权限
             if (!checkAdminPassword()) {
-                window.location.href = 'index.html'; // 如果没有权限，跳转到首页
+                window.location.href = 'index.html';
                 return;
             }
-            loadPosts();
+            // loadPosts(); // 注释掉这行，由 app.js 统一处理加载
         });
     </script>
 </body>

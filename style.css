@@ -1,4 +1,7 @@
-/* 基础样式重置 */
+/* ======================
+   基础样式 
+======================= */
+/* 包含全局样式重置和基本元素样式 */
 * {
     margin: 0;
     padding: 0;
@@ -21,7 +24,10 @@ h1 {
     font-size: 2.2em;
 }
 
-/* 表单样式 */
+/* ======================
+   表单样式 
+======================= */
+/* 包含表单容器、输入框、按钮等样式 */
 #postForm {
     background: white;
     padding: 25px;
@@ -67,7 +73,10 @@ button:hover {
     background: #1557b0;
 }
 
-/* 帖子列表样式 */
+/* ======================
+   帖子列表样式 
+======================= */
+/* 包含帖子列表布局、卡片样式、按钮样式等 */
 #postsList {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -138,7 +147,10 @@ button:hover {
     background: #1557a5;
 }
 
-/* 响应式布局 */
+/* ======================
+   响应式布局 
+======================= */
+/* 不同屏幕尺寸的适配样式 */
 @media (max-width: 1200px) {
     .filter-section {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -563,3 +575,30 @@ select[multiple] {
     justify-content: center;
     z-index: 1000;
 }
+
+/* 新增编号样式 */
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.post-number {
+    background: #e0e0e0;
+    color: #666;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    margin-right: 10px;
+}
+
+/* ======================
+   筛选功能样式 
+======================= */
+/* 时间筛选、复选框布局等样式 */
+
+/* ======================
+   管理员功能样式 
+======================= */
+/* 举报状态、恢复按钮等管理员专用样式 */

@@ -1,13 +1,29 @@
-// 在文件顶部添加
+// ======================
+// 核心功能函数
+// ======================
+
+// 加载并显示帖子列表
 function loadPosts() {
     const container = document.getElementById('postsList');
     if (!container) return;
 
+    // 清空现有内容
+    container.innerHTML = '';
+
     const { posts } = getStoredPosts();
     const isAdminPage = window.location.pathname.includes('admin.html');
 
-    // 过滤被举报的帖子（管理员页面除外）
-    const filteredPosts = isAdminPage ? posts : posts.filter(post => !post.reported);
+    // 修复管理员页面筛选逻辑
+    let filteredPosts = posts;
+    if (isAdminPage) {
+        const selectedReports = getCheckedValues('filter-report');
+        filteredPosts = posts.filter(post => {
+            const matchesReport = checkReport(selectedReports, post.reported);
+            return matchesReport;
+        });
+    } else {
+        filteredPosts = posts.filter(post => !post.reported);
+    }
 
     // 在加载帖子时添加兼容处理
     const postsWithCompatibility = filteredPosts.map(post => {
@@ -26,7 +42,7 @@ function loadPosts() {
         return post;
     });
 
-    postsWithCompatibility.forEach(post => {
+    postsWithCompatibility.forEach((post, index) => {
         const postEl = document.createElement('div');
         postEl.className = 'post-item';
         postEl.innerHTML = `
@@ -44,10 +60,14 @@ function loadPosts() {
             ${post.playstyles ? `<div class="playstyles">玩法：${post.playstyles}</div>` : ''}
             <div class="contact-info">📧 联系方式：${post.contact}</div>
             <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
-            ${isAdminPage ? `<button class="delete-btn" data-id="${post.id}">删除帖子</button>` : ''}
+            ${isAdminPage ? `
+                <button class="delete-btn" data-id="${post.id}">删除帖子</button>
+                ${post.reported ? `
+                    <button class="restore-btn" data-id="${post.id}">恢复状态</button>
+                    <div class="report-status">⚠️ 已举报</div>
+                ` : ''}
+            ` : ''}
             ${!isAdminPage ? `<button class="report-btn" data-id="${post.id}">举报</button>` : ''}
-            ${isAdminPage && post.reported ? `<div class="report-status">已举报</div>` : ''}
-            ${isAdminPage && post.reported ? `<button class="restore-btn" data-id="${post.id}">恢复帖子</button>` : ''}
         `;
         container.appendChild(postEl);
     });
@@ -105,11 +125,8 @@ function loadPosts() {
     });
 }
 
-// 确保在函数定义后导出到全局
-window.loadPosts = loadPosts;
-
-// 其他全局函数
-window.filterPosts = function() {
+// 根据筛选条件过滤帖子
+function filterPosts() {
     const searchText = document.getElementById('searchInput').value.toLowerCase();
     const searchContact = document.getElementById('searchContact').checked;
     const { posts } = getStoredPosts();
@@ -157,156 +174,169 @@ window.filterPosts = function() {
     });
 
     displayPosts(filteredPosts);
-};
+}
 
-// 保持其他事件监听器不变
-document.addEventListener('DOMContentLoaded', () => {
-    // 通用初始化代码
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                filterPosts();
-            }
+// 显示过滤后的帖子
+function displayPosts(posts) {
+    const container = document.getElementById('postsList');
+    container.innerHTML = '';
+    const isAdminPage = window.location.pathname.includes('admin.html');
+
+    posts.forEach(post => {
+        const postEl = document.createElement('div');
+        postEl.className = 'post-item';
+        postEl.innerHTML = `
+            <h3>${post.title}</h3>
+            <p class="post-meta">
+                版本：${post.version} 
+                ${post.loader ? `| 加载器：${post.loader}` : ''}
+                | 发布时间：${post.timestamp}
+            </p>
+            <p class="post-meta">
+                游戏类型：${post.gameType} | 
+                存档类型：${post.saveType}
+            </p>
+            <div class="post-content">${post.content.replace(/\n/g, '<br>')}</div>
+            ${post.playstyles ? `<div class="playstyles">玩法：${post.playstyles}</div>` : ''}
+            <div class="contact-info">📧 联系方式：${post.contact}</div>
+            <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
+            ${isAdminPage ? `
+                <button class="delete-btn" data-id="${post.id}">删除帖子</button>
+                ${post.reported ? `
+                    <button class="restore-btn" data-id="${post.id}">恢复状态</button>
+                    <div class="report-status">⚠️ 已举报</div>
+                ` : ''}
+            ` : ''}
+            ${!isAdminPage ? `<button class="report-btn" data-id="${post.id}">举报</button>` : ''}
+        `;
+        container.appendChild(postEl);
+    });
+
+    // 绑定查看详情事件
+    document.querySelectorAll('.view-detail-btn').forEach(btn => {
+        btn.addEventListener('click', handleViewDetail);
+    });
+
+    // 如果是管理员页面，绑定删除帖子事件
+    if (isAdminPage) {
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', handleDeletePost);
         });
     }
 
-    // 仅在有搜索按钮的页面绑定
-    const searchButton = document.getElementById('searchButton');
-    if (searchButton) {
-        searchButton.addEventListener('click', filterPosts);
-    }
+    // 绑定举报按钮事件
+    document.querySelectorAll('.report-btn').forEach(btn => {
+        btn.addEventListener('click', handleReport);
+    });
 
-    // 仅在存在版本筛选的页面绑定
-    const otherVersionCheckbox = document.querySelector('input[name="filter-version"][value="其他"]');
-    if (otherVersionCheckbox) {
-        otherVersionCheckbox.addEventListener('change', function() {
-            document.getElementById('otherVersionInput').style.display = this.checked ? 'block' : 'none';
-        });
-    }
-
-    // 自动加载帖子（适用于所有有帖子列表的页面）
-    if (document.getElementById('postsList')) {
-        loadPosts();
-    }
-    
-    // 管理员页面初始化
-    initAdminPage();
-
-    // 修改全选功能
-    document.querySelectorAll('.select-all').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const group = this.dataset.group;
-            document.querySelectorAll(`input[name="${group}"]`).forEach(cb => {
-                cb.checked = this.checked;
-            });
-        });
-
-        // 监听子复选框变化，更新全选状态
-        const group = checkbox.dataset.group;
-        document.querySelectorAll(`input[name="${group}"]`).forEach(cb => {
-            cb.addEventListener('change', () => {
-                const allChecked = Array.from(document.querySelectorAll(`input[name="${group}"]`))
-                    .every(cb => cb.checked);
-                checkbox.checked = allChecked;
-            });
+    // 绑定恢复按钮事件
+    document.querySelectorAll('.restore-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            handleRestoreReport(this.dataset.id);
         });
     });
-});
-
-// 替换所有localStorage操作
-async function getStoredPosts() {
-    const { data, error } = await supabase
-        .from('posts')
-        .select('*')
-        .order('timestamp', { ascending: false })
-    
-    return { posts: data || [] }
 }
 
+// 获取本地存储的帖子数据
+function getStoredPosts() {
+    const stored = localStorage.getItem('mcPosts');
+    const data = stored ? JSON.parse(stored) : { posts: [] };
+    
+    data.posts = data.posts.map(post => {
+        // 确保只添加一次编号
+        if (!post.serialNumber) {
+            post.serialNumber = data.posts.indexOf(post) + 1;
+            if (!post.content.startsWith(`#${post.serialNumber}`)) {
+                post.content = `#${post.serialNumber}\n${post.content}`;
+            }
+        }
+        return post;
+    });
+    
+    return data;
+}
+
+// 保存新帖子到本地存储
 async function savePost(post) {
-    const { error } = await supabase
-        .from('posts')
-        .insert([post])
-    
-    if (error) {
-        console.error('保存失败:', error)
-        return false
+    const storage = getStoredPosts();
+    post.serialNumber = storage.posts.length + 1;
+    // 仅在内容开头添加一次编号
+    if (!post.content.startsWith(`#${post.serialNumber}`)) {
+        post.content = `#${post.serialNumber}\n${post.content}`;
     }
-    return true
+    storage.posts.unshift(post);
+    localStorage.setItem('mcPosts', JSON.stringify(storage));
+    return true;
 }
 
-// 在 app.js 中添加全局变量来存储当前编号
-let postCounter = 0;
+// ======================
+// 表单处理相关
+// ======================
 
-// 主页面表单提交
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('postForm')) {
-        document.getElementById('postForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const versionSelect = document.getElementById('version');
-            const versionInput = versionSelect.value === '其他' ? 
-                prompt('请输入您的游戏版本号：') : 
-                versionSelect.value;
+// 主表单提交处理
+document.getElementById('postForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const versionSelect = document.getElementById('version');
+    const versionInput = versionSelect.value === '其他' ? 
+        prompt('请输入您的游戏版本号：') : 
+        versionSelect.value;
 
-            const playstyles = Array.from(document.querySelectorAll('input[name="playstyle"]:checked'))
-                .map(input => input.value)
-                .join(', ');
+    const playstyles = Array.from(document.querySelectorAll('input[name="playstyle"]:checked'))
+        .map(input => input.value)
+        .join(', ');
 
-            const loaderValue = document.getElementById('loader').value;
-            const retentionTimeSelect = document.getElementById('retentionTime');
-            let retentionTime;
-            if (retentionTimeSelect.value === 'custom') {
-                retentionTime = confirmCustomRetention();
-                if (retentionTime === null) {
-                    // 高亮显示输入框
-                    document.getElementById('customDays').style.border = '2px solid red';
-                    return;
-                }
-            } else {
-                retentionTime = retentionTimeSelect.value;
-            }
+    const loaderValue = document.getElementById('loader').value;
+    const retentionTimeSelect = document.getElementById('retentionTime');
+    let retentionTime;
+    if (retentionTimeSelect.value === 'custom') {
+        retentionTime = confirmCustomRetention();
+        if (retentionTime === null) {
+            // 高亮显示输入框
+            document.getElementById('customDays').style.border = '2px solid red';
+            return;
+        }
+    } else {
+        retentionTime = retentionTimeSelect.value;
+    }
 
-            // 检查留存时间是否有效
-            if (retentionTime <= 0) {
-                alert('留存时间必须大于0');
-                return;
-            }
+    // 检查留存时间是否有效
+    if (retentionTime <= 0) {
+        alert('留存时间必须大于0');
+        return;
+    }
 
-            // 获取当前最大编号并累加
-            const storage = getStoredPosts();
-            const maxId = storage.posts.length > 0 ? Math.max(...storage.posts.map(post => post.id)) : 0;
-            const postCounter = maxId + 1;
+    // 获取当前最大编号并累加
+    const storage = getStoredPosts();
+    const maxId = storage.posts.length > 0 ? Math.max(...storage.posts.map(post => post.id)) : 0;
+    const postCounter = maxId + 1;
 
-            const newPost = {
-                id: Date.now(),
-                title: document.getElementById('title').value,
-                content: document.getElementById('content').value,
-                version: versionInput || versionSelect.value,
-                serverType: document.getElementById('serverType').value,
-                connectionType: document.getElementById('connectionType').value,
-                gameType: document.getElementById('gameType').value,
-                saveType: document.getElementById('saveType').value,
-                playstyles,
-                loader: loaderValue === '我不知道' ? '' : loaderValue,
-                contact: document.getElementById('contact').value.trim(),
-                timestamp: new Date().toLocaleString('zh-CN'),
-                retentionTime: Number(retentionTime),
-                reported: false,
-            };
+    const newPost = {
+        id: Date.now(),
+        title: document.getElementById('title').value,
+        content: document.getElementById('content').value,
+        version: versionInput || versionSelect.value,
+        serverType: document.getElementById('serverType').value,
+        connectionType: document.getElementById('connectionType').value,
+        gameType: document.getElementById('gameType').value,
+        saveType: document.getElementById('saveType').value,
+        playstyles,
+        loader: loaderValue === '我不知道' ? '' : loaderValue,
+        contact: document.getElementById('contact').value.trim(),
+        timestamp: new Date().toLocaleString('zh-CN'),
+        retentionTime: Number(retentionTime),
+        reported: false,
+    };
 
-            if (!validatePost(newPost)) return;
+    if (!validatePost(newPost)) return;
 
-            storage.posts.unshift(newPost);
-            localStorage.setItem('mcPosts', JSON.stringify(storage));
-            
-            resetForm();
-            loadPosts();
-        });
+    if (savePost(newPost)) {
+        resetForm();
+        loadPosts();
     }
 });
 
+// 表单验证
 function validatePost({title, content, version, contact}) {
     if (!title || !content || !version || !contact) {
         alert('请填写所有必填字段！');
@@ -315,90 +345,7 @@ function validatePost({title, content, version, contact}) {
     return true;
 }
 
-function resetForm() {
-    document.getElementById('postForm').reset();
-}
-
-// 添加查看详情处理函数
-function handleViewDetail(e) {
-    const postId = e.target.dataset.id;
-    window.location.href = `post.html?id=${postId}`;
-}
-
-// 删除帖子处理函数
-function handleDeletePost(e) {
-    if (!confirm('确定要删除该帖子吗？')) return;
-
-    const postId = Number(e.target.dataset.id);
-    if (!postId) return;
-
-    const storage = getStoredPosts();
-    storage.posts = storage.posts.filter(post => post.id !== postId);
-    localStorage.setItem('mcPosts', JSON.stringify(storage));
-
-    loadPosts(); // 重新加载帖子列表
-}
-
-// 加密函数
-function encryptPassword(pwd) {
-    return btoa(pwd); // 使用base64简单加密
-}
-
-// 在 checkAdminPassword 函数后添加 resetAdminPassword 函数
-function resetAdminPassword() {
-    if (!checkAdminPassword()) {
-        alert('请先验证当前管理员密码');
-        return;
-    }
-    
-    const newPassword = prompt('请输入新密码（至少6位）：');
-    if (newPassword && newPassword.length >= 6) {
-        localStorage.setItem('adminPwd', encryptPassword(newPassword));
-        alert('密码已重置');
-    } else if (newPassword) {
-        alert('密码长度不足，至少需要6位');
-        resetAdminPassword();
-    } else {
-        alert('密码重置已取消');
-    }
-}
-
-// 修改管理员状态存储方式
-let isAdminAuthenticated = sessionStorage.getItem('isAdminAuthenticated') === 'true';
-
-function checkAdminPassword() {
-    if (isAdminAuthenticated) return true;
-
-    const storedPwd = localStorage.getItem('adminPwd');
-    if (!storedPwd) {
-        let initPwd;
-        do {
-            initPwd = prompt('首次使用请设置管理员密码（至少6位）：');
-            if (initPwd && initPwd.length < 6) {
-                alert('密码长度不足，至少需要6位');
-            }
-        } while (initPwd && initPwd.length < 6);
-        
-        if (initPwd) {
-            localStorage.setItem('adminPwd', encryptPassword(initPwd));
-            sessionStorage.setItem('isAdminAuthenticated', 'true');
-            isAdminAuthenticated = true;
-            return true;
-        }
-        return false;
-    }
-
-    const inputPwd = prompt('请输入管理员密码：');
-    if (encryptPassword(inputPwd) === storedPwd) {
-        sessionStorage.setItem('isAdminAuthenticated', 'true');
-        isAdminAuthenticated = true;
-        return true;
-    }
-    alert('密码错误！');
-    return false;
-}
-
-// 修改 handleVersionChange 函数
+// 表单字段变化处理
 function handleVersionChange(select) {
     if (select.value === '其他') {
         const customVersion = prompt('请输入您的游戏版本号：');
@@ -413,23 +360,42 @@ function handleVersionChange(select) {
     }
 }
 
-// 在 app.js 中添加处理自定义版本号的函数
-function addCustomVersion() {
-    const customVersion = document.getElementById('customVersion').value.trim();
-    if (customVersion) {
-        // 创建新的复选框
-        const newCheckbox = document.createElement('label');
-        newCheckbox.innerHTML = `<input type="checkbox" name="filter-version" value="${customVersion}"> ${customVersion}`;
-        
-        // 添加到版本筛选区域
-        document.querySelector('.version-checkboxes').appendChild(newCheckbox);
-        
-        // 清空输入框
-        document.getElementById('customVersion').value = '';
+function handleConnectionTypeChange(select) {
+    const customInput = document.getElementById('customConnectionInput');
+    customInput.style.display = select.value === '其他' ? 'block' : 'none';
+}
+
+function handleRetentionTimeChange(select) {
+    const customRetentionDiv = document.getElementById('customRetentionTime');
+    if (select.value === 'custom') {
+        customRetentionDiv.style.display = 'block';
+    } else {
+        customRetentionDiv.style.display = 'none';
     }
 }
 
-// 修改时间筛选相关函数
+// ======================
+// 筛选功能相关
+// ======================
+
+// 通用筛选函数
+function getCheckedValues(name) {
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+        .map(input => input.value);
+}
+
+function checkMatch(selected, value) {
+    return selected.length === 0 || selected.includes(value);
+}
+
+function checkReport(selected, isReported) {
+    if (selected.length === 0) return true;
+    if (selected.includes('已举报') && isReported) return true;
+    if (selected.includes('未举报') && !isReported) return true;
+    return false;
+}
+
+// 时间筛选处理
 let currentTimeFilter = null;
 let activeTimeButton = null;
 
@@ -473,7 +439,6 @@ function applyCustomTimeFilter() {
     }
 }
 
-// 添加取消时间筛选的函数
 function clearTimeFilter() {
     // 移除所有激活按钮的样式
     document.querySelectorAll('.quick-time-buttons button').forEach(button => {
@@ -489,81 +454,139 @@ function clearTimeFilter() {
     activeTimeButton = null;
 }
 
-// 通用检查函数
-function getCheckedValues(name) {
-    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
-        .map(input => input.value);
+// ======================
+// 帖子操作功能
+// ======================
+
+// 查看详情
+function handleViewDetail(e) {
+    const postId = e.target.dataset.id;
+    window.location.href = `post.html?id=${postId}`;
 }
 
-function checkMatch(selected, value) {
-    return selected.length === 0 || selected.includes(value);
+// 删除/恢复操作
+function handleDeletePost(e) {
+    const postId = Number(e.target.dataset.id);
+    if (!postId) return;
+
+    const storage = getStoredPosts();
+    storage.posts = storage.posts.filter(post => post.id !== postId);
+    localStorage.setItem('mcPosts', JSON.stringify(storage));
+    loadPosts();
 }
 
-function checkReport(selected, isReported) {
-    return selected.length === 0 || 
-        (selected.includes('已举报') && isReported) ||
-        (selected.includes('未举报') && !isReported);
+function handleRestoreReport(postId) {
+    const storage = getStoredPosts();
+    const post = storage.posts.find(p => p.id == postId);
+    post.reported = false;
+    localStorage.setItem('mcPosts', JSON.stringify(storage));
 }
 
-function displayPosts(posts) {
-    const container = document.getElementById('postsList');
-    container.innerHTML = '';
+// ======================
+// 管理员功能
+// ======================
 
-    posts.forEach(post => {
-        const postEl = document.createElement('div');
-        postEl.className = 'post-item';
-        postEl.innerHTML = `
-            <h3>${post.title}</h3>
-            <p class="post-meta">
-                版本：${post.version} 
-                ${post.loader ? `| 加载器：${post.loader}` : ''}
-                | 发布时间：${post.timestamp}
-            </p>
-            <p class="post-meta">
-                游戏类型：${post.gameType} | 
-                存档类型：${post.saveType}
-            </p>
-            <div class="post-content">${post.content.replace(/\n/g, '<br>')}</div>
-            ${post.playstyles ? `<div class="playstyles">玩法：${post.playstyles}</div>` : ''}
-            <div class="contact-info">📧 联系方式：${post.contact}</div>
-            <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
-        `;
-        container.appendChild(postEl);
-    });
-
-    // 绑定查看详情事件
-    document.querySelectorAll('.view-detail-btn').forEach(btn => {
-        btn.addEventListener('click', handleViewDetail);
-    });
+// 密码管理
+function encryptPassword(pwd) {
+    return btoa(pwd); // 使用base64简单加密
 }
 
-// 处理留存时间选择变化
-function handleRetentionTimeChange(select) {
-    const customRetentionDiv = document.getElementById('customRetentionTime');
-    if (select.value === 'custom') {
-        customRetentionDiv.style.display = 'block';
+// 在 app.js 顶部定义全局变量
+let isAdminAuthenticated = false;
+
+function checkAdminPassword() {
+    // 如果已经认证，直接返回 true
+    if (isAdminAuthenticated) return true;
+
+    const storedPwd = localStorage.getItem('adminPwd');
+    if (!storedPwd) {
+        let initPwd;
+        do {
+            initPwd = prompt('首次使用请设置管理员密码（至少6位）：');
+            if (initPwd && initPwd.length < 6) {
+                alert('密码长度不足，至少需要6位');
+            }
+        } while (initPwd && initPwd.length < 6);
+        
+        if (initPwd) {
+            localStorage.setItem('adminPwd', encryptPassword(initPwd));
+            sessionStorage.setItem('isAdminAuthenticated', 'true');
+            isAdminAuthenticated = true;
+            return true;
+        }
+        return false;
+    }
+
+    const inputPwd = prompt('请输入管理员密码：');
+    if (encryptPassword(inputPwd) === storedPwd) {
+        sessionStorage.setItem('isAdminAuthenticated', 'true');
+        isAdminAuthenticated = true;
+        return true;
+    }
+    alert('密码错误！');
+    return false;
+}
+
+function resetAdminPassword() {
+    if (!checkAdminPassword()) {
+        alert('请先验证当前管理员密码');
+        return;
+    }
+    
+    const newPassword = prompt('请输入新密码（至少6位）：');
+    if (newPassword && newPassword.length >= 6) {
+        localStorage.setItem('adminPwd', encryptPassword(newPassword));
+        alert('密码已重置');
+    } else if (newPassword) {
+        alert('密码长度不足，至少需要6位');
+        resetAdminPassword();
     } else {
-        customRetentionDiv.style.display = 'none';
+        alert('密码重置已取消');
     }
 }
 
-// 修改确认自定义留存时间函数
-function confirmCustomRetention() {
-    const customDays = document.getElementById('customDays').value;
-    if (!customDays || customDays < 1) {
-        alert('请输入有效的天数');
-        return null;
+// 管理员页面初始化
+function initAdminPage() {
+    // 检查sessionStorage中的认证状态
+    const sessionAuth = sessionStorage.getItem('isAdminAuthenticated') === 'true';
+    
+    if (sessionAuth) {
+        isAdminAuthenticated = true;
+        loadPosts();
+        return;
     }
-    return customDays * 1440; // 返回分钟数
+
+    // 未认证时进行密码验证
+    if (checkAdminPassword()) {
+        sessionStorage.setItem('isAdminAuthenticated', 'true');
+        isAdminAuthenticated = true;
+        loadPosts();
+    } else {
+        window.location.href = 'index.html';
+    }
 }
 
-// 处理联机方式选择变化
-function handleConnectionTypeChange(select) {
-    const customInput = document.getElementById('customConnectionInput');
-    customInput.style.display = select.value === '其他' ? 'block' : 'none';
+// ======================
+// 通用工具函数
+// ======================
+
+// 自定义版本号处理
+function addCustomVersion() {
+    const customVersion = document.getElementById('customVersion').value.trim();
+    if (customVersion) {
+        // 创建新的复选框
+        const newCheckbox = document.createElement('label');
+        newCheckbox.innerHTML = `<input type="checkbox" name="filter-version" value="${customVersion}"> ${customVersion}`;
+        
+        // 添加到版本筛选区域
+        document.querySelector('.version-checkboxes').appendChild(newCheckbox);
+        
+        // 清空输入框
+        document.getElementById('customVersion').value = '';
+    }
 }
 
-// 添加自定义联机方式
+// 自定义联机方式处理
 function addCustomConnection() {
     const customValue = document.getElementById('customConnection').value.trim();
     if (customValue) {
@@ -583,43 +606,110 @@ function selectAll(name) {
     });
 }
 
-// 取消全选
 function deselectAll() {
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
 }
 
-// 修改恢复函数
-function handleRestoreReport(postId) {
-    if (!isAdminAuthenticated && !checkAdminPassword()) return;
-    
-    const storage = getStoredPosts();
-    const post = storage.posts.find(p => p.id == postId);
-    if (post) {
-        post.reported = false;
-        localStorage.setItem('mcPosts', JSON.stringify(storage));
-        location.reload();
-    }
+// ======================
+// 复选框操作函数
+// ======================
+
+// 初始化全选功能
+function initSelectAll(checkbox) {
+    // 全选/取消全选处理
+    checkbox.addEventListener('change', function() {
+        const group = this.dataset.group;
+        setGroupCheckboxes(group, this.checked);
+    });
+
+    // 子复选框变化监听
+    const group = checkbox.dataset.group;
+    const childCheckboxes = document.querySelectorAll(`input[name="${group}"]`);
+    childCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            updateSelectAllState(checkbox, group);
+        });
+    });
 }
 
-// 修改管理员页面加载逻辑，移除全局作用域中的return
-function initAdminPage() {
-    if (window.location.pathname.includes('admin.html')) {
-        // 检查sessionStorage中的认证状态
-        isAdminAuthenticated = sessionStorage.getItem('isAdminAuthenticated') === 'true';
-        
-        if (!isAdminAuthenticated && !checkAdminPassword()) {
-            window.location.href = 'index.html';
-            return; // ✅ 现在在函数作用域内
+// 设置整组复选框状态
+function setGroupCheckboxes(groupName, checked) {
+    document.querySelectorAll(`input[name="${groupName}"]`).forEach(cb => {
+        cb.checked = checked;
+    });
+}
+
+// 更新全选复选框状态
+function updateSelectAllState(selectAllCheckbox, groupName) {
+    const allChecked = Array.from(document.querySelectorAll(`input[name="${groupName}"]`))
+        .every(cb => cb.checked);
+    selectAllCheckbox.checked = allChecked;
+}
+
+// ======================
+// 事件监听初始化
+// ======================
+document.addEventListener('DOMContentLoaded', () => {
+    // 搜索相关
+    document.getElementById('searchInput')?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            filterPosts();
         }
-        
-        // 加载完成后保持认证状态
-        sessionStorage.setItem('isAdminAuthenticated', 'true');
-        isAdminAuthenticated = true;
-        
-        // 初始化筛选器
-        initializeFilters();
+    });
+
+    // 版本筛选处理
+    document.querySelector('input[name="filter-version"][value="其他"]')?.addEventListener('change', function() {
+        document.getElementById('otherVersionInput').style.display = this.checked ? 'block' : 'none';
+    });
+
+    // 全选功能初始化（替换原有代码）
+    document.querySelectorAll('.select-all').forEach(checkbox => {
+        initSelectAll(checkbox);
+    });
+
+    // 自动加载帖子
+    if (document.getElementById('postsList')) {
+        loadPosts();
+    }
+    
+    // 管理员页面特殊处理
+    if (window.location.pathname.includes('admin.html')) {
+        loadPosts();
+    }
+
+    // 在 DOMContentLoaded 事件监听器中添加
+    document.querySelectorAll('input[name="filter-report"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            if (window.location.pathname.includes('admin.html')) {
+                loadPosts(); // 管理员页面实时更新
+            }
+        });
+    });
+});
+
+// 在 app.js 中添加 resetForm 函数
+function resetForm() {
+    const form = document.getElementById('postForm');
+    if (form) {
+        form.reset(); // 重置表单字段
+
+        // 手动处理特殊字段
+        const customConnectionInput = document.getElementById('customConnectionInput');
+        if (customConnectionInput) {
+            customConnectionInput.style.display = 'none';
+        }
+
+        const customRetentionTime = document.getElementById('customRetentionTime');
+        if (customRetentionTime) {
+            customRetentionTime.style.display = 'none';
+        }
+
+        // 重置复选框
+        const playstyleCheckboxes = document.querySelectorAll('input[name="playstyle"]');
+        playstyleCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
     }
 }
-document.addEventListener('DOMContentLoaded', initAdminPage);
