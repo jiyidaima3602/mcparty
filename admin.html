@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员页面</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>管理员页面</h1>
+        
+        <!-- 搜索和筛选区域 -->
+        <div class="search-filter">
+            <div class="form-group">
+                <input type="text" id="searchInput" placeholder="搜索标题或内容...">
+                <label><input type="checkbox" id="searchContact"> 搜索联系方式</label>
+                <button id="searchButton">搜索</button>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-column">
+                    <h3>玩法</h3>
+                    <div class="playstyle-checkboxes">
+                        <label><input type="checkbox" class="select-all" data-group="filter-playstyle"> 全选</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="科技"> 科技</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="冒险"> 冒险</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="PVP"> PVP</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="建筑"> 建筑</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="创造"> 创造</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="RPG"> RPG</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="宝可梦"> 宝可梦</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="恐怖"> 恐怖</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="幸运方块"> 幸运方块</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="空岛"> 空岛</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="枪械"> 枪械</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="丧尸"> 丧尸</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="求生"> 求生</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="硬核"> 硬核</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="任务"> 任务</label>
+                        <label><input type="checkbox" name="filter-playstyle" value="地图"> 地图</label>
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h3>版本</h3>
+                    <div class="version-checkboxes">
+                        <label><input type="checkbox" name="filter-version" value="1.7.10"> 1.7.10</label>
+                        <label><input type="checkbox" name="filter-version" value="1.12.2"> 1.12.2</label>
+                        <label><input type="checkbox" name="filter-version" value="1.16.5"> 1.16.5</label>
+                        <label><input type="checkbox" name="filter-version" value="1.18.2"> 1.18.2</label>
+                        <label><input type="checkbox" name="filter-version" value="1.19.2"> 1.19.2</label>
+                        <label><input type="checkbox" name="filter-version" value="1.20.1"> 1.20.1</label>
+                        <label><input type="checkbox" name="filter-version" value="1.21.1"> 1.21.1</label>
+                        <label><input type="checkbox" name="filter-version" value="其他"> 其他</label>
+                    </div>
+                    <div id="otherVersionInput" style="display: none; margin-top: 10px;">
+                        <input type="text" id="customVersion" placeholder="请输入版本号">
+                        <button onclick="addCustomVersion()">添加</button>
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h3>模组加载器</h3>
+                    <div class="loader-checkboxes">
+                        <label><input type="checkbox" name="filter-loader" value="Forge"> Forge</label>
+                        <label><input type="checkbox" name="filter-loader" value="Fabric"> Fabric</label>
+                        <label><input type="checkbox" name="filter-loader" value="Quilt"> Quilt</label>
+                        <label><input type="checkbox" name="filter-loader" value="NeoForge"> NeoForge</label>
+                        <label><input type="checkbox" name="filter-loader" value="其他"> 其他</label>
+                        <label><input type="checkbox" name="filter-loader" value="无"> 无</label>
+                        <label><input type="checkbox" name="filter-loader" value="我不知道"> 我不知道</label>
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h3>时间筛选</h3>
+                    <div class="time-filter">
+                        <div class="quick-time-buttons">
+                            <button onclick="setTimeFilter(5)">5分钟</button>
+                            <button onclick="setTimeFilter(60)">1小时</button>
+                            <button onclick="setTimeFilter(1440)">1天</button>
+                            <button onclick="setTimeFilter(10080)">7天</button>
+                            <button onclick="setTimeFilter(43200)">1月</button>
+                            <button onclick="setTimeFilter(525600)">1年</button>
+                        </div>
+                        <div class="custom-time">
+                            <label for="startDate">开始日期：</label>
+                            <input type="datetime-local" id="startDate">
+                            <label for="endDate">结束日期：</label>
+                            <input type="datetime-local" id="endDate">
+                            <button onclick="applyCustomTimeFilter()">应用</button>
+                            <button onclick="clearTimeFilter()">取消</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h3>举报状态</h3>
+                    <div class="report-checkboxes">
+                        <label><input type="checkbox" name="filter-report" value="已举报"> 已举报</label>
+                        <label><input type="checkbox" name="filter-report" value="未举报"> 未举报</label>
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h3>联机方式</h3>
+                    <div class="connection-checkboxes">
+                        <label><input type="checkbox" class="select-all" data-group="filter-connection"> 全选</label>
+                        <label><input type="checkbox" name="filter-connection" value="内网穿透（常见）"> 内网穿透</label>
+                        <label><input type="checkbox" name="filter-connection" value="RadminLAN"> RadminLAN</label>
+                        <label><input type="checkbox" name="filter-connection" value="公网IPv4"> 公网IPv4</label>
+                        <label><input type="checkbox" name="filter-connection" value="Essentials"> Essentials</label>
+                        <label><input type="checkbox" name="filter-connection" value="公网IPv6"> 公网IPv6</label>
+                        <label><input type="checkbox" name="filter-connection" value="其他虚拟局域网"> 其他虚拟局域网</label>
+                        <label><input type="checkbox" name="filter-connection" value="OpenLink"> OpenLink</label>
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h3>存档类型</h3>
+                    <div class="save-checkboxes">
+                        <label><input type="checkbox" class="select-all" data-group="filter-save"> 全选</label>
+                        <label><input type="checkbox" name="filter-save" value="新存档"> 新存档</label>
+                        <label><input type="checkbox" name="filter-save" value="现有存档"> 现有存档</label>
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h3>联机类型</h3>
+                    <div class="server-checkboxes">
+                        <label><input type="checkbox" class="select-all" data-group="filter-server"> 全选</label>
+                        <label><input type="checkbox" name="filter-server" value="公开服务器"> 公开服务器</label>
+                        <label><input type="checkbox" name="filter-server" value="私人服务器"> 私人服务器</label>
+                        <label><input type="checkbox" name="filter-server" value="临时联机"> 临时联机</label>
+                        <label><input type="checkbox" name="filter-server" value="长期联机"> 长期联机</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="postsList"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 检查管理员权限
+            if (!checkAdminPassword()) {
+                window.location.href = 'index.html'; // 如果没有权限，跳转到首页
+                return;
+            }
+            loadPosts();
+        });
+    </script>
+</body>
+</html>
