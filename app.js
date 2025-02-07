@@ -12,21 +12,33 @@ const supabaseClient = createClient(
 // ======================
 
 // 加载并显示帖子列表
-function loadPosts() {
-  supabaseClient
-    .from('posts')
-    .select('*')
-    .then(({ data: posts }) => {
-      const container = document.getElementById('postsList');
-      container.innerHTML = posts.map(post => `
-        <div class="post-item">
-          <h3>${post.title}</h3>
-          <p>${post.content}</p>
-          <button onclick="location.href='post.html?id=${post.id}'">查看详情</button>
-        </div>
-      `).join('');
-    })
-    .catch(error => console.error('加载失败:', error));
+async function loadPosts() {
+  try {
+    const { data: posts, error } = await supabaseClient
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    
+    console.log('加载到的帖子:', posts); // 添加调试日志
+    
+    const container = document.getElementById('postsList');
+    if (!container) return;
+    
+    container.innerHTML = posts.map(post => `
+      <div class="post-item">
+        <h3>${post.title}</h3>
+        <p>${post.content}</p>
+        <small>发布时间：${new Date(post.created_at).toLocaleString()}</small>
+        <button onclick="location.href='post.html?id=${post.id}'">查看详情</button>
+      </div>
+    `).join('');
+
+  } catch (error) {
+    console.error('加载失败:', error);
+    alert('帖子加载失败，请刷新重试');
+  }
 }
 
 // 暴露到全局
@@ -622,4 +634,24 @@ if (!window.supabase) {
   console.error('Supabase未正确初始化！');
 } else {
   console.log('Supabase已初始化:', window.supabase);
+}
+
+// 在app.js中添加统一的提交函数
+async function submitPost(formData) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('posts')
+      .insert([formData])
+      .select();
+
+    if (error) throw error;
+    
+    console.log('发布成功:', data);
+    alert('帖子发布成功！2秒后自动跳转');
+    setTimeout(() => location.href = 'browse.html', 2000);
+    
+  } catch (error) {
+    console.error('发布失败:', error);
+    alert(`发布失败: ${error.message}`);
+  }
 }
