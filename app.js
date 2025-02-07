@@ -1,128 +1,28 @@
+// 在文件最顶部添加
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+// 初始化并导出supabase实例
+export const supabase = createClient(
+  'https://jzpcrdvffrpdyuetbefb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
+);
+
 // ======================
 // 核心功能函数
 // ======================
 
 // 加载并显示帖子列表
-export async function loadPosts() {
-    const container = document.getElementById('postsList');
-    if (!container) return;
-
-    // 清空现有内容
-    container.innerHTML = '';
-
-    const { posts } = getStoredPosts();
-    const isAdminPage = window.location.pathname.includes('admin.html');
-
-    // 修复管理员页面筛选逻辑
-    let filteredPosts = posts;
-    if (isAdminPage) {
-        const selectedReports = getCheckedValues('filter-report');
-        filteredPosts = posts.filter(post => {
-            const matchesReport = checkReport(selectedReports, post.reported);
-            return matchesReport;
-        });
-    } else {
-        filteredPosts = posts.filter(post => !post.reported);
-    }
-
-    // 在加载帖子时添加兼容处理
-    const postsWithCompatibility = filteredPosts.map(post => {
-        // 旧数据兼容处理
-        if (!post.saveType) {
-            post.saveType = post.gameType === "新存档" || post.gameType === "现有存档" 
-                ? post.gameType 
-                : "未指定";
-            post.gameType = post.gameType === "新存档" || post.gameType === "现有存档" 
-                ? "原版" 
-                : post.gameType;
-        }
-        if (!post.connectionType) {
-            post.connectionType = post.serverType || '未指定';
-        }
-        return post;
-    });
-
-    postsWithCompatibility.forEach((post, index) => {
-        const postEl = document.createElement('div');
-        postEl.className = 'post-item';
-        postEl.innerHTML = `
-            <h3>${post.title}</h3>
-            <p class="post-meta">
-                版本：${post.version} 
-                ${post.loader ? `| 加载器：${post.loader}` : ''}
-                | 发布时间：${post.timestamp}
-            </p>
-            <p class="post-meta">
-                游戏类型：${post.gameType} | 
-                存档类型：${post.saveType}
-            </p>
-            <div class="post-content">${post.content.replace(/\n/g, '<br>')}</div>
-            ${post.playstyles ? `<div class="playstyles">玩法：${post.playstyles}</div>` : ''}
-            <div class="contact-info">📧 联系方式：${post.contact}</div>
-            <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
-            ${isAdminPage ? `
-                <button class="delete-btn" data-id="${post.id}">删除帖子</button>
-                ${post.reported ? `
-                    <button class="restore-btn" data-id="${post.id}">恢复状态</button>
-                    <div class="report-status">⚠️ 已举报</div>
-                ` : ''}
-            ` : ''}
-            ${!isAdminPage ? `<button class="report-btn" data-id="${post.id}">举报</button>` : ''}
-        `;
-        container.appendChild(postEl);
-    });
-
-    // 绑定查看详情事件
-    document.querySelectorAll('.view-detail-btn').forEach(btn => {
-        btn.addEventListener('click', handleViewDetail);
-    });
-
-    // 如果是管理员页面，绑定删除帖子事件
-    if (isAdminPage) {
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', handleDeletePost);
-        });
-    }
-
-    // 举报功能
-    function handleReport(e) {
-        const postId = e.target.dataset.id;
-        const reason = prompt('请输入举报原因：');
-        if (reason) {
-            // 更新帖子状态
-            const storage = getStoredPosts();
-            const post = storage.posts.find(p => p.id == postId);
-            if (post) {
-                post.reported = true;
-                localStorage.setItem('mcPosts', JSON.stringify(storage));
-            }
-
-            // 更新UI
-            e.target.disabled = true;
-            e.target.textContent = '已举报';
-            e.target.style.backgroundColor = '#ccc';
-            
-            // 隐藏被举报的帖子
-            const postEl = e.target.closest('.post-item');
-            if (postEl) {
-                postEl.style.display = 'none';
-            }
-
-            alert(`已举报帖子 ${postId}，原因：${reason}`);
-        }
-    }
-
-    // 绑定举报按钮事件
-    document.querySelectorAll('.report-btn').forEach(btn => {
-        btn.addEventListener('click', handleReport);
-    });
-
-    // 绑定恢复按钮事件
-    document.querySelectorAll('.restore-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            handleRestoreReport(this.dataset.id);
-        });
-    });
+export const loadPosts = async () => {
+  try {
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    // 渲染逻辑...
+  } catch (error) {
+    console.error('加载失败:', error);
+  }
 }
 
 // 根据筛选条件过滤帖子
@@ -222,6 +122,34 @@ function displayPosts(posts) {
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', handleDeletePost);
         });
+    }
+
+    // 举报功能
+    function handleReport(e) {
+        const postId = e.target.dataset.id;
+        const reason = prompt('请输入举报原因：');
+        if (reason) {
+            // 更新帖子状态
+            const storage = getStoredPosts();
+            const post = storage.posts.find(p => p.id == postId);
+            if (post) {
+                post.reported = true;
+                localStorage.setItem('mcPosts', JSON.stringify(storage));
+            }
+
+            // 更新UI
+            e.target.disabled = true;
+            e.target.textContent = '已举报';
+            e.target.style.backgroundColor = '#ccc';
+            
+            // 隐藏被举报的帖子
+            const postEl = e.target.closest('.post-item');
+            if (postEl) {
+                postEl.style.display = 'none';
+            }
+
+            alert(`已举报帖子 ${postId}，原因：${reason}`);
+        }
     }
 
     // 绑定举报按钮事件
@@ -459,7 +387,7 @@ function clearTimeFilter() {
 // ======================
 
 // 查看详情
-function handleViewDetail(e) {
+export function handleViewDetail(e) {
     const postId = e.target.dataset.id;
     window.location.href = `post.html?id=${postId}`;
 }
@@ -653,11 +581,6 @@ function updateSelectAllState(selectAllCheckbox, groupName) {
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('postsList')) {
-        // 添加双重安全检查
-        if (typeof supabase === 'undefined' || !supabase) {
-            console.error('Supabase初始化失败，请检查客户端配置');
-            return;
-        }
         loadPosts();
     }
 });
@@ -686,9 +609,3 @@ function resetForm() {
         });
     }
 }
-
-// 导出supabase实例
-export const supabase = createClient(
-  'https://jzpcrdvffrpdyuetbefb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
-);
