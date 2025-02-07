@@ -20,13 +20,12 @@ let isAdminAuthenticated = false; // 管理员认证状态标识
 // 事件监听初始化 (提前)
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
-    initPage();
-    initSelectAllCheckboxes();
-    bindGlobalEvents();
-    
-    // 添加帖子加载
-    if (document.getElementById('postsList')) {
-        fetchAndDisplayPosts();
+    // 确保只在浏览页面初始化
+    if (window.location.pathname.includes('browse.html')) {
+        initPage();
+        initSelectAllCheckboxes();
+        bindGlobalEvents();
+        loadPosts(); // 显式调用加载
     }
 });
 
@@ -130,10 +129,20 @@ function handleGlobalClick(e) {
 async function loadPosts() {
     try {
         const posts = await fetchPostsFromSupabase();
-        // 完全移除DOM操作
-        console.log('已加载帖子数量:', posts.length);
+        const container = document.getElementById('postsList');
+        
+        if (!container) {
+            console.error('帖子容器未找到');
+            return;
+        }
+        
+        container.innerHTML = posts.length > 0 
+            ? posts.map(post => renderPost(post)).join('')
+            : '<div class="empty-tip">暂时没有帖子，快来发布第一条吧！</div>';
+            
     } catch (error) {
         console.error('加载失败:', error);
+        alert('帖子加载失败，请刷新重试');
     }
 }
 
