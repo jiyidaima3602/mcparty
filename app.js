@@ -662,10 +662,6 @@ function renderPost(post) {
       <div class="post-meta">
         <span class="post-number">#${post.serialNumber || post.id}</span>
         <span class="post-time">${formatTime(post.created_at)}</span>
-        ${post.reported ? 
-          '<span class="reported-badge">已举报</span>' : 
-          `<button class="report-btn" data-id="${post.id}">举报</button>`
-        }
       </div>
       <h3>${post.title}</h3>
       <div class="meta-info">
@@ -676,6 +672,16 @@ function renderPost(post) {
       <div class="content">${post.content}</div>
       ${post.playstyles ? `<div class="tags">玩法：${post.playstyles.split(',').map(t => `<span>${t.trim()}</span>`).join('')}</div>` : ''}
       <div class="contact">📧 联系：${post.contact || '未提供'}</div>
+      
+      <div class="post-footer">
+        <div class="post-actions">
+          <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
+          ${post.reported ? 
+            '<span class="reported-badge">已举报</span>' : 
+            `<button class="report-btn" data-id="${post.id}">举报违规</button>`
+          }
+        </div>
+      </div>
     </div>
   `;
 }

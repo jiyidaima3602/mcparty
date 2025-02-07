@@ -506,19 +506,37 @@ select[multiple] {
     cursor: pointer;
 }
 
-/* 举报按钮 */
-.report-btn {
-    background-color: #ff4444;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: all 0.3s;
-    border: none;
-    font-size: 12px;
-    margin-left: auto; /* 靠右对齐 */
+/* 帖子底部样式 */
+.post-footer {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
 }
 
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 调整举报按钮样式 */
+.report-btn {
+    order: 2; /* 确保举报按钮在右侧 */
+    background: #ff4444;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: all 0.3s;
+}
+
+.view-detail-btn {
+    order: 1; /* 查看详情按钮在左侧 */
+    flex-grow: 1;
+}
+
+/* 举报按钮 */
 .report-btn:hover {
     background-color: #cc0000;
     transform: translateY(-1px);
