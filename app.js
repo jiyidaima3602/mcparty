@@ -678,7 +678,16 @@ function renderPost(post) {
         <div><strong>版本：</strong>${post.version}</div>
         ${post.loader ? `<div><strong>加载器：</strong>${post.loader}</div>` : ''}
         <div><strong>游戏类型：</strong>${post.game_type}</div>
+        ${post.server_type ? `<div><strong>联机类型：</strong>${post.server_type}</div>` : ''}
+        ${post.contact ? `<div class="contact-info">📧 联系：${post.contact}</div>` : ''}
       </div>
+
+      <!-- 玩法标签 -->
+      ${post.playstyles ? `
+        <div class="playstyle-tags">
+          <strong>玩法标签：</strong>
+          ${post.playstyles.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('')}
+        </div>` : ''}
 
       <!-- 举报按钮区域 -->
       <div class="post-footer">

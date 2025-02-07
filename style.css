@@ -128,9 +128,10 @@ button:hover {
 }
 
 .contact-info {
-    color: #333;
-    font-size: 0.9em;
-    margin-bottom: 10px;
+    color: #1a73e8;
+    padding: 8px 0;
+    border-top: 1px dashed #eee;
+    margin-top: 10px;
 }
 
 .view-detail-btn {
@@ -511,9 +512,11 @@ select[multiple] {
 
 /* 帖子底部样式 */
 .post-footer {
-    margin-top: auto;
-    padding-top: 15px;
-    text-align: right;
+    margin-top: 20px;
+    padding: 15px 0 0;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .post-actions {
@@ -527,23 +530,25 @@ select[multiple] {
 .report-btn {
     background: #ff4444;
     color: white;
-    padding: 8px 20px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
+    padding: 8px 25px;
+    border-radius: 20px;
+    font-size: 14px;
     transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .report-btn:hover {
-    background: #cc0000;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .reported-notice {
     color: #ff4444;
-    font-size: 0.9em;
-    padding: 5px;
-    text-align: center;
+    font-weight: bold;
+    padding: 8px 15px;
+    background: #ffe6e6;
+    border-radius: 20px;
+    width: fit-content;
 }
 
 /* 举报按钮 */
@@ -687,4 +692,44 @@ select[multiple] {
   50% { transform: translateX(3px); }
   75% { transform: translateX(-3px); }
   100% { transform: translateX(0); }
+}
+
+/* 新增联系方式样式 */
+.contact-info {
+  color: #1a73e8;
+  padding: 8px 0;
+  border-top: 1px dashed #eee;
+  margin-top: 10px;
+}
+
+/* 玩法标签容器 */
+.playstyle-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 15px 0;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+/* 单个标签样式 */
+.tag {
+  background: #e3f2fd;
+  color: #1a73e8;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.9em;
+  border: 1px solid #bbdefb;
+}
+
+/* 元信息网格布局 */
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
 }
