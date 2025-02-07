@@ -1,7 +1,4 @@
-/* ======================
-   基础样式 
-======================= */
-/* 包含全局样式重置和基本元素样式 */
+/* 基础样式重置 */
 * {
     margin: 0;
     padding: 0;
@@ -24,10 +21,7 @@ h1 {
     font-size: 2.2em;
 }
 
-/* ======================
-   表单样式 
-======================= */
-/* 包含表单容器、输入框、按钮等样式 */
+/* 表单样式 */
 #postForm {
     background: white;
     padding: 25px;
@@ -73,10 +67,7 @@ button:hover {
     background: #1557b0;
 }
 
-/* ======================
-   帖子列表样式 
-======================= */
-/* 包含帖子列表布局、卡片样式、按钮样式等 */
+/* 帖子列表样式 */
 #postsList {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -107,18 +98,15 @@ button:hover {
 }
 
 .post-meta {
-    display: flex;
-    justify-content: space-between;
     color: #666;
-    margin: 10px 0;
     font-size: 0.9em;
+    margin-bottom: 10px;
 }
 
 .post-content {
+    margin-bottom: 10px;
     line-height: 1.6;
-    margin-bottom: 15px;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+    flex-grow: 1;
 }
 
 .playstyles {
@@ -128,32 +116,29 @@ button:hover {
 }
 
 .contact-info {
-    color: #1a73e8;
-    padding: 8px 0;
-    border-top: 1px dashed #eee;
-    margin-top: 10px;
+    color: #333;
+    font-size: 0.9em;
+    margin-bottom: 10px;
 }
 
 .view-detail-btn {
     background: #1a73e8;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s;
-    order: 1;
-    text-align: center;
+    font-size: 14px;
+    transition: background 0.3s;
+    margin-top: auto;
+    width: 100%;
 }
 
 .view-detail-btn:hover {
     background: #1557a5;
 }
 
-/* ======================
-   响应式布局 
-======================= */
-/* 不同屏幕尺寸的适配样式 */
+/* 响应式布局 */
 @media (max-width: 1200px) {
     .filter-section {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -509,68 +494,26 @@ select[multiple] {
     cursor: pointer;
 }
 
-/* 帖子底部样式 */
-.post-footer {
-    margin-top: 20px;
-    padding: 15px 0 0;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.post-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 15px;
-}
-
-.view-detail-btn {
-    background: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s;
-    order: 1;
-    text-align: center;
-}
-
+/* 举报按钮 */
 .report-btn {
     background: #ff4444;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s;
-    order: 2;
-    text-align: center;
+    margin-top: 10px;
+    width: 100%;
+    transition: background 0.3s;
 }
 
-.reported-notice {
-    color: #ff4444;
-    font-weight: bold;
-    padding: 8px 15px;
-    background: #ffe6e6;
-    border-radius: 20px;
-    width: fit-content;
+.report-btn:hover {
+    background: #cc0000;
 }
 
-/* 举报按钮 */
-.report-btn.reported {
-    background-color: #666;
+.report-btn:disabled {
+    background: #ccc;
     cursor: not-allowed;
-}
-
-.reported-badge {
-    background: #666;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 3px;
-    font-size: 12px;
-    margin-left: auto;
 }
 
 .select-all {
@@ -619,137 +562,4 @@ select[multiple] {
     align-items: center;
     justify-content: center;
     z-index: 1000;
-}
-
-/* 新增编号样式 */
-.post-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.post-number {
-    background: #e0e0e0;
-    color: #666;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    margin-right: 10px;
-}
-
-/* ======================
-   筛选功能样式 
-======================= */
-/* 时间筛选、复选框布局等样式 */
-
-/* ======================
-   管理员功能样式 
-======================= */
-/* 举报状态、恢复按钮等管理员专用样式 */
-
-/* 帖子详情页样式 */
-.post-meta-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    margin: 20px 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.post-content-section h3,
-.playstyle-section h3,
-.contact-section h3 {
-    color: #1a73e8;
-    margin: 20px 0 10px;
-    padding-bottom: 5px;
-    border-bottom: 2px solid #eee;
-}
-
-.content-box,
-.contact-box {
-    background: white;
-    padding: 15px;
-    border-radius: 6px;
-    border: 1px solid #eee;
-    line-height: 1.6;
-}
-
-.tag-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.tag {
-    background: #e3f2fd;
-    color: #1a73e8;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 0.9em;
-    border: 1px solid #bbdefb;
-}
-
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-3px); }
-  50% { transform: translateX(3px); }
-  75% { transform: translateX(-3px); }
-  100% { transform: translateX(0); }
-}
-
-/* 新增联系方式样式 */
-.contact-info {
-  color: #1a73e8;
-  padding: 8px 0;
-  border-top: 1px dashed #eee;
-  margin-top: 10px;
-}
-
-/* 玩法标签容器 */
-.playstyle-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 15px 0;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 6px;
-}
-
-/* 单个标签样式 */
-.tag {
-  background: #e3f2fd;
-  color: #1a73e8;
-  padding: 4px 12px;
-  border-radius: 15px;
-  font-size: 0.9em;
-  border: 1px solid #bbdefb;
-}
-
-/* 元信息网格布局 */
-.meta-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  margin: 15px 0;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 6px;
-}
-
-/* 移动端适配 */
-@media (max-width: 480px) {
-    .post-actions {
-        gap: 10px;
-    }
-    
-    .view-detail-btn,
-    .report-btn {
-        width: 100%;
-        padding: 12px 20px;
-    }
 }
