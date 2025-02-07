@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initPage();
     initSelectAllCheckboxes();
     bindGlobalEvents();
+    
+    // 添加帖子加载
+    if (document.getElementById('postsList')) {
+        fetchAndDisplayPosts();
+    }
 });
 
 // ======================
@@ -226,90 +231,9 @@ function filterPosts() {
 // 显示过滤后的帖子
 function displayPosts(posts) {
     const container = document.getElementById('postsList');
-    container.innerHTML = '';
-    const isAdminPage = window.location.pathname.includes('admin.html');
-
-    posts.forEach(post => {
-        const postEl = document.createElement('div');
-        postEl.className = 'post-item';
-        postEl.innerHTML = renderPost(post);
-        container.appendChild(postEl);
-    });
-
-    // 统一使用事件委托处理所有交互
-    container.addEventListener('click', function(e) {
-        const target = e.target;
-        
-        // 处理查看详情
-        if (target.classList.contains('view-detail-btn')) {
-            e.preventDefault();
-            const postId = target.dataset.postId;
-            if (postId) {
-                window.location.href = `post.html?id=${postId}`;
-            }
-            return;
-        }
-
-        // 处理举报按钮
-        if (target.classList.contains('report-btn')) {
-            handleReport(e);
-            return;
-        }
-    });
-
-    // 如果是管理员页面，绑定删除帖子事件
-    if (isAdminPage) {
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', handleDeletePost);
-        });
-    }
-
-    // 举报功能
-    async function handleReport(e) {
-        const button = e.target;
-        const postId = button.dataset.id;
-        
-        if (!postId || button.disabled) return;
-
-        const reason = prompt('请输入举报原因：');
-        if (!reason) return;
-
-        try {
-            const { error } = await supabaseClient
-                .from('posts')
-                .update({ 
-                    reported: true,
-                    report_reason: reason 
-                })
-                .eq('id', postId);
-
-            if (error) throw error;
-
-            // 更新按钮状态
-            button.disabled = true;
-            button.textContent = '已举报';
-            button.classList.add('reported');
-            
-            // 添加视觉反馈
-            button.offsetWidth; // 触发重绘
-            button.style.animation = 'shake 0.5s';
-            
-            setTimeout(() => {
-                button.style.animation = '';
-            }, 500);
-
-        } catch (error) {
-            console.error('举报失败:', error);
-            alert(`举报失败: ${error.message}`);
-        }
-    }
-
-    // 绑定恢复按钮事件
-    document.querySelectorAll('.restore-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            handleRestoreReport(this.dataset.id);
-        });
-    });
+    if (!container) return;
+    
+    container.innerHTML = posts.map(post => renderPost(post)).join('');
 }
 
 // ======================
@@ -777,7 +701,11 @@ function renderPost(post) {
 // 新增初始化函数
 // ======================
 function initPage() {
-    // 初始化页面元素
+    // 修改前
+    console.log('帖子容器元素：', document.getElementById('posts-container'));
+    
+    // 修改后（根据browse.html中的实际ID）
+    console.log('帖子容器元素：', document.getElementById('postsList'));
     loadPosts();
     initSelectAllCheckboxes();
     bindGlobalEvents();
@@ -826,24 +754,24 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchAndDisplayPosts() {
-    // 添加错误处理
     try {
-        const { data: posts, error } = await supabase
-            .from('your_posts_table') // 请确认表名是否正确
+        // 修改后（使用已初始化的supabaseClient）
+        const { data: posts, error } = await supabaseClient
+            .from('posts')  // 确保表名正确
             .select('*')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        console.log('获取到的帖子数据：', posts); // 检查控制台输出
-
-        // 添加空数据检查
+        
+        // 修改提示方式（替换showMessage）
         if (!posts || posts.length === 0) {
-            return showMessage('暂时没有帖子，快来发布第一条吧！', 'info');
+            console.log('暂时没有帖子');
+            return;
         }
 
         displayPosts(posts);
     } catch (err) {
         console.error('获取帖子失败：', err);
-        showMessage('获取内容失败，请检查网络连接', 'error');
+        alert('获取内容失败，请检查网络连接');
     }
 }
