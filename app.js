@@ -1,34 +1,29 @@
-// 移除所有import语句
-const supabase = window.supabase;
+// 初始化Supabase
+const supabase = createClient(
+  'https://jzpcrdvffrpdyuetbefb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
+);
 
 // ======================
 // 核心功能函数
 // ======================
 
 // 加载并显示帖子列表
-async function loadPosts() {
-  if (!window.supabase?.from) {
-    console.error('Supabase未正确初始化');
-    return;
-  }
-  
-  try {
-    const { data: posts, error } = await window.supabase
-      .from('posts')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    const container = document.getElementById('postsList');
-    container.innerHTML = posts.map(post => `
-      <div class="post-item">
-        <h3>${post.title}</h3>
-        <p>${post.content}</p>
-        <button onclick="window.location.href='post.html?id=${post.id}'">查看详情</button>
-      </div>
-    `).join('');
-  } catch (error) {
-    console.error('加载失败:', error);
-  }
+function loadPosts() {
+  supabase
+    .from('posts')
+    .select('*')
+    .then(({ data: posts }) => {
+      const container = document.getElementById('postsList');
+      container.innerHTML = posts.map(post => `
+        <div class="post-item">
+          <h3>${post.title}</h3>
+          <p>${post.content}</p>
+          <button onclick="location.href='post.html?id=${post.id}'">查看详情</button>
+        </div>
+      `).join('');
+    })
+    .catch(error => console.error('加载失败:', error));
 }
 
 // 暴露到全局
@@ -396,9 +391,9 @@ function clearTimeFilter() {
 // ======================
 
 // 查看详情
-export function handleViewDetail(e) {
+function handleViewDetail(e) {
     const postId = e.target.dataset.id;
-    window.location.href = `post.html?id=${postId}`;
+    location.href = `post.html?id=${postId}`;
 }
 
 // 删除/恢复操作

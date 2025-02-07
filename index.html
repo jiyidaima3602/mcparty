@@ -5,7 +5,9 @@
     <title>发布Minecraft联机帖子</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://alcdn.msauth.net/browser/2.24.0/js/msal-browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@polkadot/api@9.8.2/bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@polkadot/api@9.8.2/bundle/polkadot-api.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
 </head>
 <body>
     <div class="container">
@@ -153,18 +155,23 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
     <script>
-        let substrateApi = null;
-        
-        async function initSubstrate() {
-            const provider = new ApiPromise({
-                provider: new WsProvider('wss://your-substrate-node.com')
-            });
-            substrateApi = await provider.isReady;
-            console.log('Substrate连接成功');
+    async function submitPost() {
+        const formData = {
+            title: document.getElementById('title').value,
+            content: document.getElementById('content').value,
+            // 其他表单字段...
+        };
+
+        const { error } = await supabase
+            .from('posts')
+            .insert([formData]);
+
+        if (!error) {
+            alert('发布成功！');
+            location.href = 'browse.html';
         }
-        initSubstrate();
+    }
     </script>
 </body>
 </html>
