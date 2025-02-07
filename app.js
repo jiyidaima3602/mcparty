@@ -14,10 +14,18 @@ const supabaseClient = createClient(
 // 加载并显示帖子列表
 async function loadPosts() {
   try {
-    const { data: posts, error } = await supabaseClient
+    let query = supabaseClient
       .from('posts')
       .select('*')
       .order('created_at', { ascending: false });
+
+    // 添加实时筛选条件
+    const selectedVersions = getCheckedValues('filter-version');
+    if (selectedVersions.length > 0) {
+      query = query.in('version', selectedVersions);
+    }
+
+    const { data: posts, error } = await query;
 
     if (error) throw error;
     
@@ -323,7 +331,10 @@ function getCheckedValues(name) {
 }
 
 function checkMatch(selected, value) {
-    return selected.length === 0 || selected.includes(value);
+    if (selected.length === 0) return true;
+    // 处理数组类型的值（如版本可能有多个）
+    const values = Array.isArray(value) ? value : [value];
+    return values.some(v => selected.includes(v));
 }
 
 function checkReport(selected, isReported) {
@@ -339,26 +350,15 @@ let activeTimeButton = null;
 
 function setTimeFilter(minutes) {
     const button = event.target;
-
-    // 如果点击已激活的按钮，则取消筛选
+    
     if (button.classList.contains('active')) {
-        button.classList.remove('active');
         currentTimeFilter = null;
-        activeTimeButton = null;
     } else {
-        // 移除之前激活按钮的样式
-        if (activeTimeButton) {
-            activeTimeButton.classList.remove('active');
-        }
-
-        // 设置当前激活按钮
-        button.classList.add('active');
-        activeTimeButton = button;
-
-        const now = new Date();
-        const timeAgo = new Date(now.getTime() - minutes * 60000);
-        currentTimeFilter = timeAgo;
+        currentTimeFilter = minutes;
     }
+    
+    button.classList.toggle('active');
+    filterPosts(); // 添加筛选触发
 }
 
 function applyCustomTimeFilter() {
@@ -593,6 +593,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('postsList')) {
         loadPosts();
     }
+    
+    // 初始化全选功能
+    document.querySelectorAll('.select-all').forEach(checkbox => {
+        initSelectAll(checkbox);
+    });
+    
+    // 绑定搜索按钮
+    document.getElementById('searchButton')?.addEventListener('click', filterPosts);
 });
 
 // 在 app.js 中添加 resetForm 函数
@@ -675,7 +683,7 @@ function renderPost(post) {
 
       <!-- 其他元信息 -->
       <div class="meta-grid">
-        <div><strong>版本：</strong>${post.version}</div>
+        <div><strong>版本：</strong>${Array.isArray(post.version) ? post.version.join(', ') : post.version}</div>
         ${post.loader ? `<div><strong>加载器：</strong>${post.loader}</div>` : ''}
         <div><strong>游戏类型：</strong>${post.game_type}</div>
         ${post.server_type ? `<div><strong>联机类型：</strong>${post.server_type}</div>` : ''}

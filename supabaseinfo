@@ -1,0 +1,16 @@
+create table public.posts (
+  id bigint generated always as identity not null,
+  title text not null,
+  content text not null,
+  version text null,
+  loader text null,
+  game_type text null,
+  server_type text null,
+  connection_type text null,
+  save_type text null,
+  retention_time integer null,
+  playstyles text null,
+  contact text null,
+  created_at timestamp with time zone null default now(),
+  constraint posts_pkey primary key (id)
+) TABLESPACE pg_default;
