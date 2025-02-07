@@ -708,11 +708,12 @@ function renderPost(post) {
         </div>` : ''}
 
       <!-- 举报按钮区域 -->
-      <div class="post-footer">
-        ${post.reported ? 
-          '<div class="reported-notice">该内容已被举报</div>' : 
-          `<button class="report-btn" data-id="${post.id}">举报违规内容</button>`
-        }
+      <div class="post-actions">
+          <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
+          ${post.reported ? 
+              '<div class="reported-notice">已举报</div>' : 
+              `<button class="report-btn" data-id="${post.id}">举报</button>`
+          }
       </div>
     </div>
   `;
