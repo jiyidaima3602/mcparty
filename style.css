@@ -107,15 +107,18 @@ button:hover {
 }
 
 .post-meta {
+    display: flex;
+    justify-content: space-between;
     color: #666;
+    margin: 10px 0;
     font-size: 0.9em;
-    margin-bottom: 10px;
 }
 
 .post-content {
-    margin-bottom: 10px;
     line-height: 1.6;
-    flex-grow: 1;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
 }
 
 .playstyles {
@@ -510,7 +513,7 @@ select[multiple] {
 .post-footer {
     margin-top: auto;
     padding-top: 15px;
-    border-top: 1px solid #eee;
+    text-align: right;
 }
 
 .post-actions {
@@ -522,26 +525,28 @@ select[multiple] {
 
 /* 调整举报按钮样式 */
 .report-btn {
-    order: 2; /* 确保举报按钮在右侧 */
     background: #ff4444;
     color: white;
-    padding: 6px 12px;
+    padding: 8px 20px;
     border-radius: 4px;
-    font-size: 12px;
+    border: none;
+    cursor: pointer;
     transition: all 0.3s;
 }
 
-.view-detail-btn {
-    order: 1; /* 查看详情按钮在左侧 */
-    flex-grow: 1;
-}
-
-/* 举报按钮 */
 .report-btn:hover {
-    background-color: #cc0000;
+    background: #cc0000;
     transform: translateY(-1px);
 }
 
+.reported-notice {
+    color: #ff4444;
+    font-size: 0.9em;
+    padding: 5px;
+    text-align: center;
+}
+
+/* 举报按钮 */
 .report-btn.reported {
     background-color: #666;
     cursor: not-allowed;

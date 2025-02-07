@@ -659,28 +659,33 @@ async function submitPost(formData) {
 function renderPost(post) {
   return `
     <div class="post-item">
-      <div class="post-meta">
-        <span class="post-number">#${post.serialNumber || post.id}</span>
-        <span class="post-time">${formatTime(post.created_at)}</span>
-      </div>
+      <!-- 标题 -->
       <h3>${post.title}</h3>
-      <div class="meta-info">
-        <span>版本：${post.version || '未指定'}</span>
-        <span>加载器：${post.loader || '无'}</span>
-        <span>游戏类型：${post.game_type || '未指定'}</span>
-      </div>
-      <div class="content">${post.content}</div>
-      ${post.playstyles ? `<div class="tags">玩法：${post.playstyles.split(',').map(t => `<span>${t.trim()}</span>`).join('')}</div>` : ''}
-      <div class="contact">📧 联系：${post.contact || '未提供'}</div>
       
+      <!-- 发布时间 -->
+      <div class="post-meta">
+        <span class="post-time">${formatTime(post.created_at)}</span>
+        <span class="post-number">#${post.serialNumber || post.id}</span>
+      </div>
+
+      <!-- 帖子内容 -->
+      <div class="post-content">
+        ${post.content}
+      </div>
+
+      <!-- 其他元信息 -->
+      <div class="meta-grid">
+        <div><strong>版本：</strong>${post.version}</div>
+        ${post.loader ? `<div><strong>加载器：</strong>${post.loader}</div>` : ''}
+        <div><strong>游戏类型：</strong>${post.game_type}</div>
+      </div>
+
+      <!-- 举报按钮区域 -->
       <div class="post-footer">
-        <div class="post-actions">
-          <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
-          ${post.reported ? 
-            '<span class="reported-badge">已举报</span>' : 
-            `<button class="report-btn" data-id="${post.id}">举报违规</button>`
-          }
-        </div>
+        ${post.reported ? 
+          '<div class="reported-notice">该内容已被举报</div>' : 
+          `<button class="report-btn" data-id="${post.id}">举报违规内容</button>`
+        }
       </div>
     </div>
   `;
