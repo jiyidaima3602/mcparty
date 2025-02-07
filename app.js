@@ -128,40 +128,20 @@ function handleGlobalClick(e) {
  * 4. 异常处理与用户反馈
  */
 async function loadPosts() {
-  try {
-    let query = supabaseClient
-      .from('posts')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    // 添加实时筛选条件
-    const selectedVersions = getCheckedValues('filter-version');
-    if (selectedVersions.length > 0) {
-      query = query.in('version', selectedVersions);
+    try {
+        const posts = await fetchPostsFromSupabase();
+        const container = document.getElementById('postsList');
+        
+        if (!container) return;
+        
+        container.innerHTML = posts.length > 0 
+            ? posts.map(renderPost).join('')
+            : '<div class="empty-tip">暂时没有帖子，快来发布第一条吧！</div>';
+            
+    } catch (error) {
+        console.error('加载失败:', error);
+        alert('帖子加载失败，请刷新重试');
     }
-
-    const { data: posts, error } = await query;
-
-    if (error) throw error;
-    
-    console.log('加载到的帖子:', posts); // 添加调试日志
-    
-    const container = document.getElementById('postsList');
-    if (!container) return;
-    
-    // 添加客户端编号（如果数据库没有）
-    const postsWithNumbers = posts.map((post, index) => ({
-      ...post,
-      serialNumber: index + 1
-    }));
-
-    // 使用带编号的数据渲染
-    container.innerHTML = postsWithNumbers.map(renderPost).join('');
-
-  } catch (error) {
-    console.error('加载失败:', error);
-    alert('帖子加载失败，请刷新重试');
-  }
 }
 
 // 暴露到全局
@@ -175,54 +155,58 @@ window.loadPosts = loadPosts;
  * - 时间范围过滤（支持快速筛选和自定义范围）
  * - 举报状态过滤
  */
-function filterPosts() {
-    const searchText = document.getElementById('searchInput').value.toLowerCase();
-    const searchContact = document.getElementById('searchContact').checked;
-    const { posts } = getStoredPosts();
-    
-    // 获取所有筛选条件
-    const selectedPlaystyles = getCheckedValues('filter-playstyle');
-    const selectedVersions = getCheckedValues('filter-version');
-    const selectedLoaders = getCheckedValues('filter-loader');
-    const selectedConnections = getCheckedValues('filter-connection');
-    const selectedSaves = getCheckedValues('filter-save');
-    const selectedServers = getCheckedValues('filter-server');
-    const selectedReports = getCheckedValues('filter-report');
-
-    const filteredPosts = posts.filter(post => {
-        const matchesSearch = searchText === '' || 
-            post.title.toLowerCase().includes(searchText) || 
-            post.content.toLowerCase().includes(searchText) ||
-            (searchContact && post.contact.toLowerCase().includes(searchText));
+async function filterPosts() {
+    try {
+        const posts = await fetchPostsFromSupabase();
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const searchContact = document.getElementById('searchContact').checked;
         
-        const matchesPlaystyles = checkMatch(selectedPlaystyles, post.playstyles);
-        const matchesVersion = checkMatch(selectedVersions, post.version);
-        const matchesLoader = checkMatch(selectedLoaders, post.loader);
-        const matchesConnection = checkMatch(selectedConnections, post.connection_type);
-        const matchesSave = checkMatch(selectedSaves, post.save_type);
-        const matchesServer = checkMatch(selectedServers, post.server_type);
-        const matchesReport = checkReport(selectedReports, post.reported);
+        // 获取所有筛选条件
+        const selectedPlaystyles = getCheckedValues('filter-playstyle');
+        const selectedVersions = getCheckedValues('filter-version');
+        const selectedLoaders = getCheckedValues('filter-loader');
+        const selectedConnections = getCheckedValues('filter-connection');
+        const selectedSaves = getCheckedValues('filter-save');
+        const selectedServers = getCheckedValues('filter-server');
+        const selectedReports = getCheckedValues('filter-report');
 
-        // 新增时间筛选检查
-        const postTime = new Date(post.created_at).getTime();
-        let timeValid = true;
-        
-        if (currentTimeFilter) {
-            if (typeof currentTimeFilter === 'object') { // 自定义时间范围
-                timeValid = postTime >= currentTimeFilter.start.getTime() && 
-                          postTime <= currentTimeFilter.end.getTime();
-            } else { // 快速时间筛选
-                const cutoffTime = new Date().getTime() - currentTimeFilter * 60000;
-                timeValid = postTime >= cutoffTime;
+        const filteredPosts = posts.filter(post => {
+            const matchesSearch = searchText === '' || 
+                post.title.toLowerCase().includes(searchText) || 
+                post.content.toLowerCase().includes(searchText) ||
+                (searchContact && post.contact.toLowerCase().includes(searchText));
+            
+            const matchesPlaystyles = checkMatch(selectedPlaystyles, post.playstyles);
+            const matchesVersion = checkMatch(selectedVersions, post.version);
+            const matchesLoader = checkMatch(selectedLoaders, post.loader);
+            const matchesConnection = checkMatch(selectedConnections, post.connection_type);
+            const matchesSave = checkMatch(selectedSaves, post.save_type);
+            const matchesServer = checkMatch(selectedServers, post.server_type);
+            const matchesReport = checkReport(selectedReports, post.reported);
+
+            // 新增时间筛选检查
+            const postTime = new Date(post.created_at).getTime();
+            let timeValid = true;
+            
+            if (currentTimeFilter) {
+                if (typeof currentTimeFilter === 'object') { // 自定义时间范围
+                    timeValid = postTime >= currentTimeFilter.start.getTime() && 
+                              postTime <= currentTimeFilter.end.getTime();
+                } else { // 快速时间筛选
+                    const cutoffTime = new Date().getTime() - currentTimeFilter * 60000;
+                    timeValid = postTime >= cutoffTime;
+                }
             }
-        }
-        
-        return timeValid && matchesSearch && matchesPlaystyles && matchesVersion && 
-               matchesLoader && matchesConnection && matchesSave && 
-               matchesServer && matchesReport;
-    });
+            
+            return timeValid && matchesSearch && matchesPlaystyles && matchesVersion && 
+                   matchesLoader && matchesConnection && matchesSave && 
+                   matchesServer && matchesReport;
+        });
 
-    displayPosts(filteredPosts);
+        displayPosts(filteredPosts);
+    } catch (error) {
+        console.error('筛选失败:', error);
+    }
 }
 
 // 显示过滤后的帖子
@@ -325,14 +309,17 @@ async function handleSubmit(e) {
 
         if (!validatePost(newPost)) return;
 
-        if (await savePost(newPost)) {
-            resetForm();
-            loadPosts();
-            alert('帖子提交成功！');
-        }
+        // 修改保存调用
+        const savedPost = await savePostToSupabase(newPost);
+        if (!savedPost) throw new Error('保存失败');
+
+        resetForm();
+        await loadPosts(); // 重新加载最新数据
+        alert('帖子提交成功！');
+        
     } catch (error) {
         console.error('提交失败:', error);
-        alert('提交失败，请检查网络连接');
+        alert(`提交失败: ${error.message}`);
     }
 }
 
@@ -695,9 +682,9 @@ function validatePostData(data) {
 function renderPost(post) {
   return `
     <div class="post-item">
-      <h3>${post.title} ${post.reported ? '<span class="reported-badge">已举报</span>' : ''}</h3>
+      <h3>${post.title}</h3>
       <div class="post-meta">
-        <span>版本：${post.version}</span>
+        <span>ID: ${post.id}</span>
         <span>${formatTime(post.created_at)}</span>
       </div>
       <div class="meta-grid">
@@ -796,5 +783,42 @@ async function fetchAndDisplayPosts() {
     } catch (err) {
         console.error('获取帖子失败：', err);
         alert('获取内容失败，请检查网络连接');
+    }
+}
+
+// ======================
+// 数据存储相关修改
+// ======================
+
+// 移除原有的getStoredPosts函数
+// 新增Supabase数据获取函数
+async function fetchPostsFromSupabase() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('posts')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('获取帖子失败:', error);
+        return [];
+    }
+}
+
+// 修改保存函数
+async function savePostToSupabase(post) {
+    try {
+        const { data, error } = await supabaseClient
+            .from('posts')
+            .insert([post])
+            .select();
+
+        if (error) throw error;
+        return data?.[0] || null;
+    } catch (error) {
+        console.error('保存失败:', error);
+        return null;
     }
 }
