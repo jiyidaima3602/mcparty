@@ -12,7 +12,20 @@
         
         const { data: post } = await supabase
             .from('posts')
-            .select('*')
+            .select(`
+              title,
+              content,
+              version,
+              loader,
+              game_type,
+              server_type,
+              connection_type,
+              save_type,
+              retention_time,
+              playstyles,
+              contact,
+              created_at
+            `)
             .eq('id', postId)
             .single();
 
@@ -28,12 +41,12 @@
             <div class="post-meta-grid">
                 <div><strong>版本：</strong>${post.version}</div>
                 ${post.loader ? `<div><strong>加载器：</strong>${post.loader}</div>` : ''}
-                <div><strong>发布时间：</strong>${post.timestamp}</div>
-                <div><strong>游戏类型：</strong>${post.gameType}</div>
-                <div><strong>联机类型：</strong>${post.serverType}</div>
-                <div><strong>联机方式：</strong>${post.connectionType}</div>
-                <div><strong>存档类型：</strong>${post.saveType}</div>
-                ${post.retentionTime ? `<div><strong>留存时间：</strong>${formatRetentionTime(post.retentionTime)}</div>` : ''}
+                <div><strong>发布时间：</strong>${post.created_at}</div>
+                <div><strong>游戏类型：</strong>${post.game_type}</div>
+                <div><strong>联机类型：</strong>${post.server_type}</div>
+                <div><strong>联机方式：</strong>${post.connection_type}</div>
+                <div><strong>存档类型：</strong>${post.save_type}</div>
+                ${post.retention_time ? `<div><strong>留存时间：</strong>${formatRetentionTime(post.retention_time)}</div>` : ''}
             </div>
             <div class="post-content-section">
                 <h3>联机详情：</h3>

@@ -26,16 +26,7 @@ async function loadPosts() {
     const container = document.getElementById('postsList');
     if (!container) return;
     
-    container.innerHTML = posts.map(post => `
-      <div class="post-item">
-        <h3>${post.title}</h3>
-        <p>${post.content}</p>
-        <small>版本：${post.version}</small>
-        <small>游戏类型：${post.game_type}</small>
-        <small>联机类型：${post.server_type}</small>
-        <button onclick="location.href='post.html?id=${post.id}'">查看详情</button>
-      </div>
-    `).join('');
+    container.innerHTML = posts.map(post => renderPost(post)).join('');
 
   } catch (error) {
     console.error('加载失败:', error);
@@ -70,13 +61,13 @@ function filterPosts() {
         const matchesPlaystyles = checkMatch(selectedPlaystyles, post.playstyles);
         const matchesVersion = checkMatch(selectedVersions, post.version);
         const matchesLoader = checkMatch(selectedLoaders, post.loader);
-        const matchesConnection = checkMatch(selectedConnections, post.connectionType);
-        const matchesSave = checkMatch(selectedSaves, post.saveType);
-        const matchesServer = checkMatch(selectedServers, post.serverType);
+        const matchesConnection = checkMatch(selectedConnections, post.connection_type);
+        const matchesSave = checkMatch(selectedSaves, post.save_type);
+        const matchesServer = checkMatch(selectedServers, post.server_type);
         const matchesReport = checkReport(selectedReports, post.reported);
 
         // 新增时间筛选检查
-        const postTime = new Date(post.timestamp).getTime();
+        const postTime = new Date(post.created_at).getTime();
         let timeValid = true;
         
         if (currentTimeFilter) {
@@ -106,30 +97,7 @@ function displayPosts(posts) {
     posts.forEach(post => {
         const postEl = document.createElement('div');
         postEl.className = 'post-item';
-        postEl.innerHTML = `
-            <h3>${post.title}</h3>
-            <p class="post-meta">
-                版本：${post.version} 
-                ${post.loader ? `| 加载器：${post.loader}` : ''}
-                | 发布时间：${post.timestamp}
-            </p>
-            <p class="post-meta">
-                游戏类型：${post.game_type} | 
-                存档类型：${post.saveType}
-            </p>
-            <div class="post-content">${post.content.replace(/\n/g, '<br>')}</div>
-            ${post.playstyles ? `<div class="playstyles">玩法：${post.playstyles}</div>` : ''}
-            <div class="contact-info">📧 联系方式：${post.contact}</div>
-            <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
-            ${isAdminPage ? `
-                <button class="delete-btn" data-id="${post.id}">删除帖子</button>
-                ${post.reported ? `
-                    <button class="restore-btn" data-id="${post.id}">恢复状态</button>
-                    <div class="report-status">⚠️ 已举报</div>
-                ` : ''}
-            ` : ''}
-            ${!isAdminPage ? `<button class="report-btn" data-id="${post.id}">举报</button>` : ''}
-        `;
+        postEl.innerHTML = renderPost(post);
         container.appendChild(postEl);
     });
 
@@ -265,15 +233,15 @@ document.getElementById('postForm')?.addEventListener('submit', function(e) {
         title: document.getElementById('title').value,
         content: document.getElementById('content').value,
         version: versionInput || versionSelect.value,
-        serverType: document.getElementById('serverType').value,
-        connectionType: document.getElementById('connectionType').value,
-        gameType: document.getElementById('gameType').value,
-        saveType: document.getElementById('saveType').value,
+        server_type: document.getElementById('serverType').value,
+        connection_type: document.getElementById('connectionType').value,
+        game_type: document.getElementById('gameType').value,
+        save_type: document.getElementById('saveType').value,
         playstyles,
         loader: loaderValue === '我不知道' ? '' : loaderValue,
         contact: document.getElementById('contact').value.trim(),
-        timestamp: new Date().toLocaleString('zh-CN'),
-        retentionTime: Number(retentionTime),
+        created_at: new Date().toISOString(),
+        retention_time: Number(retentionTime),
         reported: false,
     };
 
@@ -640,20 +608,64 @@ if (!window.supabase) {
 
 // 在app.js中添加统一的提交函数
 async function submitPost(formData) {
-  try {
-    const { data, error } = await supabaseClient
-      .from('posts')
-      .insert([formData])
-      .select();
+  const formattedData = {
+    title: formData.title,
+    content: formData.content,
+    version: formData.version,
+    loader: formData.loader,
+    game_type: formData.gameType,  // 注意转换命名规范
+    server_type: formData.serverType,
+    connection_type: formData.connectionType,
+    save_type: formData.saveType,
+    retention_time: parseInt(formData.retentionTime),
+    playstyles: formData.playstyles?.join(', '), // 数组转字符串
+    contact: formData.contact,
+    created_at: new Date().toISOString()
+  };
 
-    if (error) throw error;
-    
-    console.log('发布成功:', data);
-    alert('帖子发布成功！2秒后自动跳转');
-    setTimeout(() => location.href = 'browse.html', 2000);
-    
-  } catch (error) {
-    console.error('发布失败:', error);
-    alert(`发布失败: ${error.message}`);
-  }
+  const { error } = await supabaseClient
+    .from('posts')
+    .insert([formattedData]);
+
+  if (error) throw error;
+  
+  console.log('发布成功:', formattedData);
+  alert('帖子发布成功！2秒后自动跳转');
+  setTimeout(() => location.href = 'browse.html', 2000);
+}
+
+// 修改帖子渲染逻辑
+function renderPost(post) {
+  return `
+    <div class="post-item">
+      <h3>${post.title}</h3>
+      <div class="meta-info">
+        <span>版本：${post.version || '未指定'}</span>
+        <span>加载器：${post.loader || '无'}</span>
+        <span>游戏类型：${post.game_type || '未指定'}</span>
+      </div>
+      <div class="content">${post.content}</div>
+      ${post.playstyles ? `<div class="tags">玩法：${post.playstyles.split(',').map(t => `<span>${t.trim()}</span>`).join('')}</div>` : ''}
+      <div class="contact">📧 联系：${post.contact || '未提供'}</div>
+    </div>
+  `;
+}
+
+// 添加提交前的字段验证
+function validatePostData(data) {
+  const requiredFields = {
+    title: '标题',
+    content: '内容',
+    game_type: '游戏类型',
+    server_type: '联机类型',
+    contact: '联系方式'
+  };
+
+  return Object.entries(requiredFields).reduce((acc, [key, name]) => {
+    if (!data[key]?.trim()) {
+      acc.isValid = false;
+      acc.errors.push(`${name}不能为空`);
+    }
+    return acc;
+  }, { isValid: true, errors: [] });
 }
