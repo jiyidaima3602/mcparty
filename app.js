@@ -6,14 +6,15 @@
 // ======================
 
 // ======================
-// 初始化区块
+// 初始化区块（补充说明）
 // ======================
 const { createClient } = supabase;
+// Supabase客户端初始化（使用项目URL和匿名密钥）
 const supabaseClient = createClient(
   'https://jzpcrdvffrpdyuetbefb.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
 );
-let isAdminAuthenticated = false; // 移至此位置
+let isAdminAuthenticated = false; // 管理员认证状态标识
 
 // ======================
 // 事件监听初始化 (提前)
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ======================
-// 核心功能区块重组
+// 核心功能区块（补充函数说明）
 // ======================
 
 // 将筛选相关函数集中
@@ -109,13 +110,12 @@ function handleGlobalClick(e) {
 // 核心功能函数
 // ======================
 
-// 加载并显示帖子列表
 /**
- * 加载并显示帖子列表
- * @async
- * @function loadPosts
- * @returns {Promise<void>}
- * @description 从Supabase加载帖子数据，应用当前筛选条件，并渲染到页面
+ * 加载并渲染帖子列表（带服务端过滤）
+ * 1. 构建动态查询条件
+ * 2. 处理版本筛选
+ * 3. 添加客户端序号
+ * 4. 异常处理与用户反馈
  */
 async function loadPosts() {
   try {
@@ -157,7 +157,14 @@ async function loadPosts() {
 // 暴露到全局
 window.loadPosts = loadPosts;
 
-// 根据筛选条件过滤帖子
+/**
+ * 综合过滤帖子列表
+ * 处理逻辑：
+ * - 文本搜索（标题/内容/联系方式）
+ * - 多维度条件筛选（版本/加载器/联机类型等）
+ * - 时间范围过滤（支持快速筛选和自定义范围）
+ * - 举报状态过滤
+ */
 function filterPosts() {
     const searchText = document.getElementById('searchInput').value.toLowerCase();
     const searchContact = document.getElementById('searchContact').checked;
@@ -228,7 +235,7 @@ function displayPosts(posts) {
         // 处理查看详情
         if (target.classList.contains('view-detail-btn')) {
             e.preventDefault();
-            const postId = target.dataset.id;
+            const postId = target.dataset.postId;
             if (postId) {
                 window.location.href = `post.html?id=${postId}`;
             }
@@ -297,7 +304,17 @@ function displayPosts(posts) {
     });
 }
 
-// 获取本地存储的帖子数据
+// ======================
+// 表单处理（补充验证逻辑说明）
+// ======================
+
+/**
+ * 获取本地存储的帖子数据
+ * 数据增强：
+ * - 自动生成序列号
+ * - 确保内容前缀格式
+ * - 数据回迁处理
+ */
 function getStoredPosts() {
     const stored = localStorage.getItem('mcPosts');
     const data = stored ? JSON.parse(stored) : { posts: [] };
@@ -333,7 +350,15 @@ async function savePost(post) {
 // 表单处理相关
 // ======================
 
-// 主表单提交处理
+/**
+ * 主表单提交处理
+ * 功能要点：
+ * - 动态处理"其他"版本输入
+ * - 多选游玩风格处理
+ * - 自定义留存时间验证
+ * - 自动生成序列号
+ * - 数据持久化与界面更新
+ */
 document.getElementById('postForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -511,8 +536,7 @@ function clearTimeFilter() {
 
 // 查看详情
 function handleViewDetail(e) {
-    e.preventDefault(); // 阻止默认行为
-    const postId = e.target.dataset.id;
+    const postId = e.target.dataset.postId;
     if (postId) {
         window.location.href = `post.html?id=${postId}`;
     }
@@ -537,15 +561,16 @@ function handleRestoreReport(postId) {
 }
 
 // ======================
-// 管理员功能
+// 管理员功能（补充安全说明）
 // ======================
 
-// 密码管理
-function encryptPassword(pwd) {
-    return btoa(pwd); // 使用base64简单加密
-}
-
-// 管理员页面初始化
+/**
+ * 管理员页面初始化
+ * 安全机制：
+ * - 使用sessionStorage存储临时认证状态
+ * - 页面跳转保护
+ * - 密码加密存储（示例使用base64）
+ */
 function initAdminPage() {
     // 检查sessionStorage中的认证状态
     const sessionAuth = sessionStorage.getItem('isAdminAuthenticated') === 'true';
@@ -715,7 +740,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// 新增时间格式化函数
+/**
+ * 时间格式化工具
+ * 输出格式：YYYY-MM-DD HH:MM
+ * 支持多语言环境（当前设置为zh-CN）
+ */
 function formatTime(isoString) {
   const date = new Date(isoString);
   return date.toLocaleString('zh-CN', {
@@ -744,4 +773,19 @@ function validatePostData(data) {
     }
     return acc;
   }, { isValid: true, errors: [] });
+}
+
+// 在renderPost函数中修改查看详情按钮的data属性
+function renderPost(post) {
+  return `
+    <div class="post-item">
+      <h3>${post.title}</h3>
+      <div class="post-meta">
+        <span>版本：${post.version}</span>
+        <span>${formatTime(post.created_at)}</span>
+      </div>
+      <button class="view-detail-btn" data-post-id="${post.id}">查看详情</button>
+      <!-- 其他内容保持不变 -->
+    </div>
+  `;
 }
