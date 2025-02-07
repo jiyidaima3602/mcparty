@@ -778,17 +778,32 @@ function validatePostData(data) {
   }, { isValid: true, errors: [] });
 }
 
-// 在renderPost函数中修改查看详情按钮的data属性
+// 修改renderPost函数以展示完整信息
 function renderPost(post) {
   return `
     <div class="post-item">
-      <h3>${post.title}</h3>
+      <h3>${post.title} ${post.reported ? '<span class="reported-badge">已举报</span>' : ''}</h3>
       <div class="post-meta">
         <span>版本：${post.version}</span>
         <span>${formatTime(post.created_at)}</span>
       </div>
-      <button class="view-detail-btn" data-post-id="${post.id}">查看详情</button>
-      <!-- 其他内容保持不变 -->
+      <div class="meta-grid">
+        <div><strong>联机类型：</strong>${post.connection_type || '未填写'}</div>
+        <div><strong>游戏类型：</strong>${post.game_type || '未填写'}</div>
+        <div><strong>联系方式：</strong>${post.contact || '未提供'}</div>
+        <div><strong>留存时间：</strong>${post.retention_time}天</div>
+      </div>
+      ${post.playstyles ? `
+      <div class="playstyle-tags">
+        ${post.playstyles.split(', ').map(style => `<span class="tag">${style}</span>`).join('')}
+      </div>` : ''}
+      <div class="post-actions">
+        <button class="view-detail-btn" data-post-id="${post.id}">查看详情</button>
+        ${!post.reported ? 
+          `<button class="report-btn" data-id="${post.id}">举报</button>` : 
+          `<button class="report-btn reported" disabled>已举报</button>`
+        }
+      </div>
     </div>
   `;
 }
@@ -835,4 +850,35 @@ function initSelectAllCheckboxes() {
             checkboxes.forEach(cb => cb.checked = this.checked);
         });
     });
+}
+
+// 在初始化代码后添加帖子容器检查
+console.log('帖子容器元素：', document.getElementById('posts-container')); // 应该返回有效元素
+
+// 确保在DOM加载完成后执行初始化
+document.addEventListener('DOMContentLoaded', () => {
+    fetchAndDisplayPosts();
+});
+
+async function fetchAndDisplayPosts() {
+    // 添加错误处理
+    try {
+        const { data: posts, error } = await supabase
+            .from('your_posts_table') // 请确认表名是否正确
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        console.log('获取到的帖子数据：', posts); // 检查控制台输出
+
+        // 添加空数据检查
+        if (!posts || posts.length === 0) {
+            return showMessage('暂时没有帖子，快来发布第一条吧！', 'info');
+        }
+
+        displayPosts(posts);
+    } catch (err) {
+        console.error('获取帖子失败：', err);
+        showMessage('获取内容失败，请检查网络连接', 'error');
+    }
 }
