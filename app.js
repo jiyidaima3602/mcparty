@@ -30,7 +30,9 @@ async function loadPosts() {
       <div class="post-item">
         <h3>${post.title}</h3>
         <p>${post.content}</p>
-        <small>发布时间：${new Date(post.created_at).toLocaleString()}</small>
+        <small>版本：${post.version}</small>
+        <small>游戏类型：${post.game_type}</small>
+        <small>联机类型：${post.server_type}</small>
         <button onclick="location.href='post.html?id=${post.id}'">查看详情</button>
       </div>
     `).join('');
@@ -112,7 +114,7 @@ function displayPosts(posts) {
                 | 发布时间：${post.timestamp}
             </p>
             <p class="post-meta">
-                游戏类型：${post.gameType} | 
+                游戏类型：${post.game_type} | 
                 存档类型：${post.saveType}
             </p>
             <div class="post-content">${post.content.replace(/\n/g, '<br>')}</div>
