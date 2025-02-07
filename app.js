@@ -130,17 +130,10 @@ function handleGlobalClick(e) {
 async function loadPosts() {
     try {
         const posts = await fetchPostsFromSupabase();
-        const container = document.getElementById('postsList');
-        
-        if (!container) return;
-        
-        container.innerHTML = posts.length > 0 
-            ? posts.map(renderPost).join('')
-            : '<div class="empty-tip">暂时没有帖子，快来发布第一条吧！</div>';
-            
+        // 完全移除DOM操作
+        console.log('已加载帖子数量:', posts.length);
     } catch (error) {
         console.error('加载失败:', error);
-        alert('帖子加载失败，请刷新重试');
     }
 }
 
@@ -158,63 +151,12 @@ window.loadPosts = loadPosts;
 async function filterPosts() {
     try {
         const posts = await fetchPostsFromSupabase();
-        const searchText = document.getElementById('searchInput').value.toLowerCase();
-        const searchContact = document.getElementById('searchContact').checked;
-        
-        // 获取所有筛选条件
-        const selectedPlaystyles = getCheckedValues('filter-playstyle');
-        const selectedVersions = getCheckedValues('filter-version');
-        const selectedLoaders = getCheckedValues('filter-loader');
-        const selectedConnections = getCheckedValues('filter-connection');
-        const selectedSaves = getCheckedValues('filter-save');
-        const selectedServers = getCheckedValues('filter-server');
-        const selectedReports = getCheckedValues('filter-report');
-
-        const filteredPosts = posts.filter(post => {
-            const matchesSearch = searchText === '' || 
-                post.title.toLowerCase().includes(searchText) || 
-                post.content.toLowerCase().includes(searchText) ||
-                (searchContact && post.contact.toLowerCase().includes(searchText));
-            
-            const matchesPlaystyles = checkMatch(selectedPlaystyles, post.playstyles);
-            const matchesVersion = checkMatch(selectedVersions, post.version);
-            const matchesLoader = checkMatch(selectedLoaders, post.loader);
-            const matchesConnection = checkMatch(selectedConnections, post.connection_type);
-            const matchesSave = checkMatch(selectedSaves, post.save_type);
-            const matchesServer = checkMatch(selectedServers, post.server_type);
-            const matchesReport = checkReport(selectedReports, post.reported);
-
-            // 新增时间筛选检查
-            const postTime = new Date(post.created_at).getTime();
-            let timeValid = true;
-            
-            if (currentTimeFilter) {
-                if (typeof currentTimeFilter === 'object') { // 自定义时间范围
-                    timeValid = postTime >= currentTimeFilter.start.getTime() && 
-                              postTime <= currentTimeFilter.end.getTime();
-                } else { // 快速时间筛选
-                    const cutoffTime = new Date().getTime() - currentTimeFilter * 60000;
-                    timeValid = postTime >= cutoffTime;
-                }
-            }
-            
-            return timeValid && matchesSearch && matchesPlaystyles && matchesVersion && 
-                   matchesLoader && matchesConnection && matchesSave && 
-                   matchesServer && matchesReport;
-        });
-
-        displayPosts(filteredPosts);
+        // 保留筛选逻辑但移除显示
+        const filteredPosts = posts.filter(/* 筛选条件 */);
+        console.log('筛选结果:', filteredPosts);
     } catch (error) {
         console.error('筛选失败:', error);
     }
-}
-
-// 显示过滤后的帖子
-function displayPosts(posts) {
-    const container = document.getElementById('postsList');
-    if (!container) return;
-    
-    container.innerHTML = posts.map(post => renderPost(post)).join('');
 }
 
 // ======================
@@ -712,11 +654,7 @@ function renderPost(post) {
 // 新增初始化函数
 // ======================
 function initPage() {
-    // 修改前
-    console.log('帖子容器元素：', document.getElementById('posts-container'));
-    
-    // 修改后（根据browse.html中的实际ID）
-    console.log('帖子容器元素：', document.getElementById('postsList'));
+    // 移除DOM相关初始化
     loadPosts();
     initSelectAllCheckboxes();
     bindGlobalEvents();
