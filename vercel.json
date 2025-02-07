@@ -1,9 +1,9 @@
 {
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/(.*.js)",
       "headers": [
-        { "key": "Content-Type", "value": "text/javascript" }
+        { "key": "Content-Type", "value": "application/javascript" }
       ]
     }
   ]

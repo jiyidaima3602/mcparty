@@ -1,18 +1,12 @@
-// 使用ESM导入方式
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-// 初始化并导出Supabase实例
-export const supabase = createClient(
-  'https://jzpcrdvffrpdyuetbefb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
-);
+// 移除所有import语句
+const supabase = window.supabase;
 
 // ======================
 // 核心功能函数
 // ======================
 
 // 加载并显示帖子列表
-export async function loadPosts() {
+async function loadPosts() {
   try {
     const { data: posts, error } = await supabase
       .from('posts')
@@ -24,6 +18,9 @@ export async function loadPosts() {
     console.error('加载失败:', error);
   }
 }
+
+// 暴露函数到全局
+window.loadPosts = loadPosts;
 
 // 根据筛选条件过滤帖子
 export function filterPosts() {
