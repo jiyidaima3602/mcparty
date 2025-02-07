@@ -13,7 +13,7 @@
     <div class="container">
         <h1>发布Minecraft联机帖子</h1>
         
-        <form id="postForm" onsubmit="event.preventDefault(); handleSubmit()">
+        <form id="postForm" onsubmit="event.preventDefault(); handleSubmit(event)">
             <div class="form-group">
                 <label for="title">帖子标题：</label>
                 <input type="text" id="title" required>
@@ -157,7 +157,7 @@
 
     <script>
     // 统一表单处理函数
-    async function handleSubmit() {
+    async function handleSubmit(event) {
         const formData = {
             title: document.getElementById('title').value,
             content: document.getElementById('content').value,

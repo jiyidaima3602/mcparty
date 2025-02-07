@@ -58,7 +58,9 @@ const AdminAuth = {
         localStorage.removeItem('adminPassword');
         alert('管理员密码已重置');
     },
-    encryptPassword,
+    encryptPassword: function(password) {
+        return btoa(password); // 简单base64加密
+    },
     initAdminPage
 };
 
@@ -77,8 +79,11 @@ const Utils = {
 // 事件处理统一管理
 // ======================
 function bindGlobalEvents() {
-    // 表单提交
-    document.getElementById('postForm')?.addEventListener('submit', handleFormSubmit);
+    // 表单提交改为直接绑定现有处理函数
+    document.getElementById('postForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        handleSubmit(e); // 使用现有的表单处理逻辑
+    });
     
     // 全局点击事件
     document.body.addEventListener('click', handleGlobalClick);
@@ -362,66 +367,26 @@ async function savePost(post) {
  * - 自动生成序列号
  * - 数据持久化与界面更新
  */
-document.getElementById('postForm')?.addEventListener('submit', function(e) {
+async function handleSubmit(e) {
     e.preventDefault();
     
-    const versionSelect = document.getElementById('version');
-    const versionInput = versionSelect.value === '其他' ? 
-        prompt('请输入您的游戏版本号：') : 
-        versionSelect.value;
-
-    const playstyles = Array.from(document.querySelectorAll('input[name="playstyle"]:checked'))
-        .map(input => input.value)
-        .join(', ');
-
-    const loaderValue = document.getElementById('loader').value;
-    const retentionTimeSelect = document.getElementById('retentionTime');
-    let retentionTime;
-    if (retentionTimeSelect.value === 'custom') {
-        retentionTime = confirmCustomRetention();
-        if (retentionTime === null) {
-            // 高亮显示输入框
-            document.getElementById('customDays').style.border = '2px solid red';
-            return;
+    try {
+        const formData = new FormData(e.target);
+        const postData = Object.fromEntries(formData.entries());
+        
+        // 调用现有的验证和保存逻辑
+        if (!validatePost(postData)) return;
+        
+        if (await savePost(postData)) {
+            resetForm();
+            loadPosts();
+            alert('帖子提交成功！');
         }
-    } else {
-        retentionTime = retentionTimeSelect.value;
+    } catch (error) {
+        console.error('提交失败:', error);
+        alert('提交失败，请检查网络连接');
     }
-
-    // 检查留存时间是否有效
-    if (retentionTime <= 0) {
-        alert('留存时间必须大于0');
-        return;
-    }
-
-    // 获取当前最大编号并累加
-    const storage = getStoredPosts();
-    const maxId = storage.posts.length > 0 ? Math.max(...storage.posts.map(post => post.id)) : 0;
-    const postCounter = maxId + 1;
-
-    const newPost = {
-        title: document.getElementById('title').value,
-        content: document.getElementById('content').value,
-        version: versionInput || versionSelect.value,
-        server_type: document.getElementById('serverType').value,
-        connection_type: document.getElementById('connectionType').value,
-        game_type: document.getElementById('gameType').value,
-        save_type: document.getElementById('saveType').value,
-        playstyles,
-        loader: loaderValue === '我不知道' ? '' : loaderValue,
-        contact: document.getElementById('contact').value.trim(),
-        created_at: new Date().toISOString(),
-        retention_time: Number(retentionTime),
-        reported: false,
-    };
-
-    if (!validatePost(newPost)) return;
-
-    if (savePost(newPost)) {
-        resetForm();
-        loadPosts();
-    }
-});
+}
 
 // 表单验证
 function validatePost({title, content, version, contact}) {
