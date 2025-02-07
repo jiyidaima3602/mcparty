@@ -141,14 +141,12 @@
         <div id="postsList"></div>
     </div>
 
-    <script type="module">
-      import { loadPosts } from './app.js';
-      
-      document.addEventListener('DOMContentLoaded', () => {
-        if (document.getElementById('postsList')) {
-          loadPosts();
-        }
-      });
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('postsList')) {
+        window.loadPosts();
+      }
+    });
     </script>
 </body>
 </html> 

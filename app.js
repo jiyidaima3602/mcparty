@@ -30,7 +30,7 @@ async function loadPosts() {
 window.loadPosts = loadPosts;
 
 // 根据筛选条件过滤帖子
-export function filterPosts() {
+function filterPosts() {
     const searchText = document.getElementById('searchInput').value.toLowerCase();
     const searchContact = document.getElementById('searchContact').checked;
     const { posts } = getStoredPosts();
@@ -612,4 +612,11 @@ function resetForm() {
             checkbox.checked = false;
         });
     }
+}
+
+// 添加初始化检查
+if (!window.supabase) {
+  console.error('Supabase未正确初始化！');
+} else {
+  console.log('Supabase已初始化:', window.supabase);
 }
