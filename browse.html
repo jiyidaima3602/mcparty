@@ -141,12 +141,50 @@
 
     <script src="app.js"></script>
     <script>
+        // 在初始化Supabase后添加
+        const supabase = createClient(
+          'https://jzpcrdvffrpdyuetbefb.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
+        )
+
         // 将事件监听移到app.js内部
         document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('postsList')) {
                 loadPosts();
             }
         });
+
+        async function loadPosts() {
+            let query = supabase
+              .from('posts')
+              .select('*')
+              .order('created_at', { ascending: false });
+
+            // 添加搜索条件
+            const searchInput = document.getElementById('searchInput').value;
+            if (searchInput) {
+                query = query.or(`title.ilike.%${searchInput}%,content.ilike.%${searchInput}%`)
+            }
+
+            // 添加版本筛选
+            const versionFilters = [...document.querySelectorAll('input[name="filter-version"]:checked')]
+                .map(input => input.value);
+            if (versionFilters.length > 0) {
+                query = query.in('version', versionFilters);
+            }
+
+            // 执行查询
+            const { data: posts, error } = await query;
+
+            const postsContainer = document.getElementById('postsList');
+            postsContainer.innerHTML = posts.map(post => `
+                <div class="post">
+                    <h3>${post.title}</h3>
+                    <p>${post.content}</p>
+                    <small>${new Date(post.created_at).toLocaleString()}</small>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html> 

@@ -5,6 +5,7 @@
     <title>帖子详情</title>
     <link rel="stylesheet" href="style.css">
     <script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
@@ -14,13 +15,18 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const postId = new URLSearchParams(window.location.search).get('id');
-            const { posts } = getStoredPosts();
-            const post = posts.find(p => p.id == postId);
             
+            // 从Supabase获取单个帖子
+            const { data: post, error } = await supabase
+              .from('posts')
+              .select('*')
+              .eq('id', postId)
+              .single();
+
             const detailContainer = document.getElementById('postDetail');
-            if (!post) {
+            if (!post || error) {
                 detailContainer.innerHTML = '<p>帖子未找到</p>';
                 return;
             }
@@ -80,6 +86,29 @@
                 }
             }
             return `${minutes}分钟`;
+        }
+
+        // 初始化Supabase客户端
+        const supabase = createClient(
+            'https://jzpcrdvffrpdyuetbefb.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
+        )
+
+        async function submitPost() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            
+            // 替换原来的localStorage代码
+            const { data, error } = await supabase
+                .from('posts')
+                .insert([{ title, content }])
+                .select()
+
+            if (error) {
+                console.error('提交失败:', error);
+            } else {
+                window.location.href = 'browse.html';
+            }
         }
     </script>
 </body>
