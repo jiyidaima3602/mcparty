@@ -258,7 +258,6 @@ document.getElementById('postForm')?.addEventListener('submit', function(e) {
     const postCounter = maxId + 1;
 
     const newPost = {
-        id: Date.now(),
         title: document.getElementById('title').value,
         content: document.getElementById('content').value,
         version: versionInput || versionSelect.value,
@@ -738,3 +737,37 @@ function validatePostData(data) {
     return acc;
   }, { isValid: true, errors: [] });
 }
+
+// 在适当的位置添加以下举报处理函数
+async function reportPost(postId, reason) {
+    const { error } = await supabaseClient
+        .from('reports')
+        .insert([
+            { 
+                post_id: postId,
+                reason: reason || '不良信息',
+                reported_at: new Date().toISOString()
+            }
+        ]);
+
+    if (error) {
+        console.error('举报提交失败:', error);
+        alert('举报提交失败，请稍后再试');
+        return false;
+    }
+    alert('举报已提交，我们会尽快处理！');
+    return true;
+}
+
+// 在DOM加载完成后绑定事件（如果使用事件委托）
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('report-btn')) {
+            const postId = e.target.dataset.postId;
+            const reason = prompt('请输入举报原因（可选）:');
+            if (confirm('确认要举报该内容吗？')) {
+                await reportPost(postId, reason);
+            }
+        }
+    });
+});

@@ -12,20 +12,7 @@
         
         const { data: post } = await supabase
             .from('posts')
-            .select(`
-              title,
-              content,
-              version,
-              loader,
-              game_type,
-              server_type,
-              connection_type,
-              save_type,
-              retention_time,
-              playstyles,
-              contact,
-              created_at
-            `)
+            .select('*')
             .eq('id', postId)
             .single();
 
@@ -115,6 +102,7 @@
         <h1>帖子详情</h1>
         <div id="postDetail"></div>
         <button onclick="window.history.back()">返回</button>
+        <button class="report-btn" data-post-id="{{POST_ID}}">举报</button>
     </div>
 </body>
 </html> 
