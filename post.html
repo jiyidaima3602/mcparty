@@ -100,7 +100,14 @@
 <body>
     <div class="container">
         <h1>帖子详情</h1>
-        <div id="postDetail"></div>
+        <div class="post-container">
+            <h2 id="post-title"></h2>
+            <div class="post-meta">
+                <span id="post-author"></span>
+                <span id="post-time"></span>
+            </div>
+            <div class="post-content" id="post-content"></div>
+        </div>
         <button onclick="window.history.back()">返回</button>
         <button class="report-btn" data-post-id="{{POST_ID}}">举报</button>
     </div>

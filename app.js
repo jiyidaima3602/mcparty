@@ -783,3 +783,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// 在文件底部添加获取单个帖子详情的函数
+async function getPostDetail(postId) {
+    const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('id', postId)
+        .single();
+
+    if (error) {
+        console.error('Error fetching post:', error);
+        return null;
+    }
+    return data;
+}
+
+// 添加页面加载时获取帖子详情的逻辑
+document.addEventListener('DOMContentLoaded', async () => {
+    // 解析URL中的帖子ID参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+    
+    if (postId) {
+        const post = await getPostDetail(postId);
+        if (post) {
+            // 填充帖子详情到页面元素
+            document.getElementById('post-title').textContent = post.title;
+            document.getElementById('post-content').textContent = post.content;
+            document.getElementById('post-author').textContent = `作者：${post.username}`;
+            document.getElementById('post-time').textContent = `发布时间：${new Date(post.created_at).toLocaleString()}`;
+        }
+    }
+});
