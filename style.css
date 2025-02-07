@@ -513,16 +513,29 @@ select[multiple] {
     padding: 5px 10px;
     border-radius: 3px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s;
+    border: none;
+    font-size: 12px;
+    margin-left: auto; /* 靠右对齐 */
 }
 
 .report-btn:hover {
     background-color: #cc0000;
+    transform: translateY(-1px);
 }
 
 .report-btn.reported {
     background-color: #666;
     cursor: not-allowed;
+}
+
+.reported-badge {
+    background: #666;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: auto;
 }
 
 .select-all {
@@ -643,4 +656,12 @@ select[multiple] {
     border-radius: 15px;
     font-size: 0.9em;
     border: 1px solid #bbdefb;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
 }

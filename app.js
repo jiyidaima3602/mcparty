@@ -120,37 +120,52 @@ function displayPosts(posts) {
         });
     }
 
+    // 使用事件委托绑定举报按钮
+    document.getElementById('postsList').addEventListener('click', function(e) {
+        if (e.target.classList.contains('report-btn')) {
+            handleReport(e);
+        }
+    });
+
     // 举报功能
     async function handleReport(e) {
-        const postId = e.target.dataset.id;
-        const reason = prompt('请输入举报原因：');
+        const button = e.target;
+        const postId = button.dataset.id;
         
-        if (reason) {
-            try {
-                const { error } = await supabaseClient
-                    .from('posts')
-                    .update({ reported: true })
-                    .eq('id', postId);
+        if (!postId || button.disabled) return;
 
-                if (error) throw error;
+        const reason = prompt('请输入举报原因：');
+        if (!reason) return;
 
-                // 更新UI状态
-                e.target.disabled = true;
-                e.target.textContent = '已举报';
-                e.target.classList.add('reported');
-                
-                alert('举报已提交，管理员会尽快处理！');
-            } catch (error) {
-                console.error('举报失败:', error);
-                alert('举报提交失败，请稍后重试');
-            }
+        try {
+            const { error } = await supabaseClient
+                .from('posts')
+                .update({ 
+                    reported: true,
+                    report_reason: reason 
+                })
+                .eq('id', postId);
+
+            if (error) throw error;
+
+            // 更新按钮状态
+            button.disabled = true;
+            button.textContent = '已举报';
+            button.classList.add('reported');
+            
+            // 添加视觉反馈
+            button.offsetWidth; // 触发重绘
+            button.style.animation = 'shake 0.5s';
+            
+            setTimeout(() => {
+                button.style.animation = '';
+            }, 500);
+
+        } catch (error) {
+            console.error('举报失败:', error);
+            alert(`举报失败: ${error.message}`);
         }
     }
-
-    // 绑定举报按钮事件
-    document.querySelectorAll('.report-btn').forEach(btn => {
-        btn.addEventListener('click', handleReport);
-    });
 
     // 绑定恢复按钮事件
     document.querySelectorAll('.restore-btn').forEach(btn => {
@@ -647,6 +662,10 @@ function renderPost(post) {
       <div class="post-meta">
         <span class="post-number">#${post.serialNumber || post.id}</span>
         <span class="post-time">${formatTime(post.created_at)}</span>
+        ${post.reported ? 
+          '<span class="reported-badge">已举报</span>' : 
+          `<button class="report-btn" data-id="${post.id}">举报</button>`
+        }
       </div>
       <h3>${post.title}</h3>
       <div class="meta-info">
