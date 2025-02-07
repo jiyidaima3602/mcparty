@@ -54,7 +54,10 @@ const FormHandlers = {
 // 将密码管理相关集中
 const AdminAuth = {
     checkAdminPassword,
-    resetAdminPassword,
+    resetAdminPassword: function() {
+        localStorage.removeItem('adminPassword');
+        alert('管理员密码已重置');
+    },
     encryptPassword,
     initAdminPage
 };
@@ -807,4 +810,29 @@ function resetForm() {
     document.getElementById('postForm').reset();
     document.getElementById('customRetentionTime').style.display = 'none';
     document.getElementById('customConnectionInput').style.display = 'none';
+}
+
+// ======================
+// 新增管理员密码验证函数
+// ======================
+function checkAdminPassword() {
+    const password = prompt('请输入管理员密码：');
+    if (!password) return false;
+    
+    // 简单base64加密验证
+    const encrypted = btoa(password);
+    return encrypted === localStorage.getItem('adminPassword');
+}
+
+// ======================
+// 新增全选复选框初始化函数
+// ======================
+function initSelectAllCheckboxes() {
+    document.querySelectorAll('.select-all').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const group = this.dataset.group;
+            const checkboxes = document.querySelectorAll(`input[name="${group}"]`);
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+    });
 }
