@@ -1,3 +1,9 @@
+// 在app.js最顶部添加初始化代码
+const supabase = createClient(
+  'https://jzpcrdvffrpdyuetbefb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
+);
+
 // ======================
 // 核心功能函数
 // ======================
@@ -651,42 +657,15 @@ function updateSelectAllState(selectAllCheckbox, groupName) {
 // ======================
 // 事件监听初始化
 // ======================
-document.addEventListener('DOMContentLoaded', () => {
-    // 搜索相关
-    document.getElementById('searchInput')?.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            filterPosts();
-        }
-    });
-
-    // 版本筛选处理
-    document.querySelector('input[name="filter-version"][value="其他"]')?.addEventListener('change', function() {
-        document.getElementById('otherVersionInput').style.display = this.checked ? 'block' : 'none';
-    });
-
-    // 全选功能初始化（替换原有代码）
-    document.querySelectorAll('.select-all').forEach(checkbox => {
-        initSelectAll(checkbox);
-    });
-
-    // 自动加载帖子
+document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('postsList')) {
+        // 添加双重安全检查
+        if (typeof supabase === 'undefined' || !supabase) {
+            console.error('Supabase初始化失败，请检查客户端配置');
+            return;
+        }
         loadPosts();
     }
-    
-    // 管理员页面特殊处理
-    if (window.location.pathname.includes('admin.html')) {
-        loadPosts();
-    }
-
-    // 在 DOMContentLoaded 事件监听器中添加
-    document.querySelectorAll('input[name="filter-report"]').forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            if (window.location.pathname.includes('admin.html')) {
-                loadPosts(); // 管理员页面实时更新
-            }
-        });
-    });
 });
 
 // 在 app.js 中添加 resetForm 函数
