@@ -156,23 +156,7 @@
     </div>
 
     <script>
-    // 统一表单处理函数
-    async function handleSubmit(event) {
-        const formData = {
-            title: document.getElementById('title').value,
-            content: document.getElementById('content').value,
-            game_type: document.getElementById('gameType').value,
-            server_type: document.getElementById('serverType').value,
-            contact_info: document.getElementById('contact').value,
-            mod_loader: document.getElementById('loader').value,
-            version: document.getElementById('version').value,
-            retention_time: parseInt(document.getElementById('retentionTime').value),
-            created_at: new Date().toISOString()
-        };
-
-        // 调用统一提交函数
-        await submitPost(formData);
-    }
+    // 完全移除这个script标签内的handleSubmit定义
     </script>
 </body>
 </html>

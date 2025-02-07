@@ -295,13 +295,34 @@ async function handleSubmit(e) {
     e.preventDefault();
     
     try {
-        const formData = new FormData(e.target);
-        const postData = Object.fromEntries(formData.entries());
+        // 获取表单元素
+        const versionSelect = document.getElementById('version');
+        const playstyles = Array.from(document.querySelectorAll('input[name="playstyle"]:checked'))
+            .map(input => input.value)
+            .join(', ');
         
-        // 调用现有的验证和保存逻辑
-        if (!validatePost(postData)) return;
-        
-        if (await savePost(postData)) {
+        // 构建完整的post对象
+        const newPost = {
+            title: document.getElementById('title').value,
+            content: document.getElementById('content').value,
+            version: versionSelect.value === '其他' ? 
+                prompt('请输入您的游戏版本号：') : 
+                versionSelect.value,
+            server_type: document.getElementById('serverType').value,
+            connection_type: document.getElementById('connectionType').value,
+            game_type: document.getElementById('gameType').value,
+            save_type: document.getElementById('saveType').value,
+            playstyles: playstyles,
+            loader: document.getElementById('loader').value,
+            contact: document.getElementById('contact').value.trim(),
+            created_at: new Date().toISOString(),
+            retention_time: Number(document.getElementById('retentionTime').value),
+            reported: false
+        };
+
+        if (!validatePost(newPost)) return;
+
+        if (await savePost(newPost)) {
             resetForm();
             loadPosts();
             alert('帖子提交成功！');
