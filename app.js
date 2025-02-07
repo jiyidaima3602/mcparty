@@ -654,6 +654,7 @@ function renderPost(post) {
 // 新增初始化函数
 // ======================
 function initPage() {
+    bindFormSubmit();
     // 移除DOM相关初始化
     loadPosts();
     initSelectAllCheckboxes();
@@ -758,5 +759,13 @@ async function savePostToSupabase(post) {
     } catch (error) {
         console.error('保存失败:', error);
         return null;
+    }
+}
+
+// 在app.js中添加表单绑定
+function bindFormSubmit() {
+    const form = document.getElementById('postForm');
+    if (form) {
+        form.addEventListener('submit', handleSubmit);
     }
 }
