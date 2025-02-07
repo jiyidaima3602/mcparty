@@ -85,10 +85,7 @@ const Utils = {
 // ======================
 function bindGlobalEvents() {
     // 表单提交改为直接绑定现有处理函数
-    document.getElementById('postForm')?.addEventListener('submit', function(e) {
-        e.preventDefault();
-        handleSubmit(e); // 使用现有的表单处理逻辑
-    });
+    document.getElementById('postForm')?.addEventListener('submit', handleSubmit);
     
     // 全局点击事件
     document.body.addEventListener('click', handleGlobalClick);
@@ -295,19 +292,25 @@ async function handleSubmit(e) {
     e.preventDefault();
     
     try {
-        // 获取表单元素
+        // 获取表单元素引用
         const versionSelect = document.getElementById('version');
+        const retentionTimeSelect = document.getElementById('retentionTime');
+        
+        // 处理版本选择
+        const version = versionSelect.value === '其他' ?
+            prompt('请输入您的游戏版本号：') :
+            versionSelect.value;
+
+        // 处理多选游玩风格
         const playstyles = Array.from(document.querySelectorAll('input[name="playstyle"]:checked'))
             .map(input => input.value)
             .join(', ');
-        
-        // 构建完整的post对象
+
+        // 构建完整帖子对象
         const newPost = {
             title: document.getElementById('title').value,
             content: document.getElementById('content').value,
-            version: versionSelect.value === '其他' ? 
-                prompt('请输入您的游戏版本号：') : 
-                versionSelect.value,
+            version: version,
             server_type: document.getElementById('serverType').value,
             connection_type: document.getElementById('connectionType').value,
             game_type: document.getElementById('gameType').value,
@@ -316,7 +319,7 @@ async function handleSubmit(e) {
             loader: document.getElementById('loader').value,
             contact: document.getElementById('contact').value.trim(),
             created_at: new Date().toISOString(),
-            retention_time: Number(document.getElementById('retentionTime').value),
+            retention_time: Number(retentionTimeSelect.value),
             reported: false
         };
 
@@ -777,19 +780,19 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchAndDisplayPosts() {
     try {
         const { data: posts, error } = await supabaseClient
-            .from('posts')  // 确保表名与Supabase后台一致
+            .from('posts')
             .select('*')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
         
-        // 替换showMessage为console.log
-        if (!posts || posts.length === 0) {
-            console.log('暂时没有帖子');
-            return;
-        }
+        const container = document.getElementById('postsList');
+        if (!container) return;
 
-        displayPosts(posts);
+        container.innerHTML = posts.length > 0 ? 
+            posts.map(post => renderPost(post)).join('') :
+            '<div class="empty-tip">暂时没有帖子，快来发布第一条吧！</div>';
+            
     } catch (err) {
         console.error('获取帖子失败：', err);
         alert('获取内容失败，请检查网络连接');
