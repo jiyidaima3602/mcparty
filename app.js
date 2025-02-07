@@ -116,9 +116,11 @@ function displayPosts(posts) {
         container.appendChild(postEl);
     });
 
-    // 绑定查看详情事件
-    document.querySelectorAll('.view-detail-btn').forEach(btn => {
-        btn.addEventListener('click', handleViewDetail);
+    // 使用事件委托绑定点击事件
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('view-detail-btn')) {
+            handleViewDetail(e);
+        }
     });
 
     // 如果是管理员页面，绑定删除帖子事件
@@ -131,12 +133,6 @@ function displayPosts(posts) {
     // 使用事件委托绑定举报按钮
     document.getElementById('postsList').addEventListener('click', function(e) {
         const postId = e.target.dataset.id;
-        
-        // 处理查看详情
-        if (e.target.classList.contains('view-detail-btn')) {
-            handleViewDetail(e);
-            return;
-        }
         
         // 处理举报
         if (e.target.classList.contains('report-btn')) {
@@ -407,9 +403,11 @@ function clearTimeFilter() {
 
 // 查看详情
 function handleViewDetail(e) {
-    e.stopPropagation();
+    e.preventDefault(); // 阻止默认行为
     const postId = e.target.dataset.id;
-    window.location.href = `post.html?id=${postId}`;
+    if (postId) {
+        window.location.href = `post.html?id=${postId}`;
+    }
 }
 
 // 删除/恢复操作
