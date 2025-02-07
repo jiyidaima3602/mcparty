@@ -7,8 +7,13 @@ const supabase = window.supabase;
 
 // 加载并显示帖子列表
 async function loadPosts() {
+  if (!window.supabase?.from) {
+    console.error('Supabase未正确初始化');
+    return;
+  }
+  
   try {
-    const { data: posts, error } = await supabase
+    const { data: posts, error } = await window.supabase
       .from('posts')
       .select('*')
       .order('created_at', { ascending: false });

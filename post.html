@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>帖子详情</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+      window.supabase = createClient(/* 配置参数 */)
+    </script>
+    <script src="app.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', async () => {
         const postId = new URLSearchParams(window.location.search).get('id');
