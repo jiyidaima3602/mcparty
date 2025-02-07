@@ -26,7 +26,14 @@ async function loadPosts() {
     const container = document.getElementById('postsList');
     if (!container) return;
     
-    container.innerHTML = posts.map(post => renderPost(post)).join('');
+    // 添加客户端编号（如果数据库没有）
+    const postsWithNumbers = posts.map((post, index) => ({
+      ...post,
+      serialNumber: index + 1
+    }));
+
+    // 使用带编号的数据渲染
+    container.innerHTML = postsWithNumbers.map(renderPost).join('');
 
   } catch (error) {
     console.error('加载失败:', error);
@@ -114,30 +121,29 @@ function displayPosts(posts) {
     }
 
     // 举报功能
-    function handleReport(e) {
+    async function handleReport(e) {
         const postId = e.target.dataset.id;
         const reason = prompt('请输入举报原因：');
+        
         if (reason) {
-            // 更新帖子状态
-            const storage = getStoredPosts();
-            const post = storage.posts.find(p => p.id == postId);
-            if (post) {
-                post.reported = true;
-                localStorage.setItem('mcPosts', JSON.stringify(storage));
-            }
+            try {
+                const { error } = await supabaseClient
+                    .from('posts')
+                    .update({ reported: true })
+                    .eq('id', postId);
 
-            // 更新UI
-            e.target.disabled = true;
-            e.target.textContent = '已举报';
-            e.target.style.backgroundColor = '#ccc';
-            
-            // 隐藏被举报的帖子
-            const postEl = e.target.closest('.post-item');
-            if (postEl) {
-                postEl.style.display = 'none';
-            }
+                if (error) throw error;
 
-            alert(`已举报帖子 ${postId}，原因：${reason}`);
+                // 更新UI状态
+                e.target.disabled = true;
+                e.target.textContent = '已举报';
+                e.target.classList.add('reported');
+                
+                alert('举报已提交，管理员会尽快处理！');
+            } catch (error) {
+                console.error('举报失败:', error);
+                alert('举报提交失败，请稍后重试');
+            }
         }
     }
 
@@ -638,6 +644,10 @@ async function submitPost(formData) {
 function renderPost(post) {
   return `
     <div class="post-item">
+      <div class="post-meta">
+        <span class="post-number">#${post.serialNumber || post.id}</span>
+        <span class="post-time">${formatTime(post.created_at)}</span>
+      </div>
       <h3>${post.title}</h3>
       <div class="meta-info">
         <span>版本：${post.version || '未指定'}</span>
@@ -649,6 +659,18 @@ function renderPost(post) {
       <div class="contact">📧 联系：${post.contact || '未提供'}</div>
     </div>
   `;
+}
+
+// 新增时间格式化函数
+function formatTime(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 }
 
 // 添加提交前的字段验证
