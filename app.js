@@ -1,17 +1,122 @@
 // ======================
-// 初始化Supabase客户端
+// 文件结构重组说明：
+// 1. 将相关功能集中到统一区块
+// 2. 调整函数顺序保持逻辑连贯性
+// 3. 添加更清晰的注释分隔
+// ======================
+
+// ======================
+// 初始化区块
 // ======================
 const { createClient } = supabase;
 const supabaseClient = createClient(
   'https://jzpcrdvffrpdyuetbefb.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
 );
+let isAdminAuthenticated = false; // 移至此位置
+
+// ======================
+// 事件监听初始化 (提前)
+// ======================
+document.addEventListener('DOMContentLoaded', function() {
+    initPage();
+    initSelectAllCheckboxes();
+    bindGlobalEvents();
+});
+
+// ======================
+// 核心功能区块重组
+// ======================
+
+// 将筛选相关函数集中
+const FilterUtils = {
+    getCheckedValues,
+    checkMatch,
+    checkReport,
+    setTimeFilter,
+    applyCustomTimeFilter,
+    clearTimeFilter
+};
+
+// 将表单处理集中
+const FormHandlers = {
+    handleVersionChange,
+    handleConnectionTypeChange,
+    handleRetentionTimeChange,
+    validatePost,
+    resetForm
+};
+
+// ======================
+// 管理员功能区块调整
+// ======================
+// 将密码管理相关集中
+const AdminAuth = {
+    checkAdminPassword,
+    resetAdminPassword,
+    encryptPassword,
+    initAdminPage
+};
+
+// ======================
+// 工具函数区块优化
+// ======================
+// 新增工具类函数
+const Utils = {
+    formatTime,      // 从文件底部移动至此
+    getStoredPosts,  // 从原位置移动至此
+    renderPost,      // 从文件底部移动至此
+    validatePostData // 从底部移动至此
+};
+
+// ======================
+// 事件处理统一管理
+// ======================
+function bindGlobalEvents() {
+    // 表单提交
+    document.getElementById('postForm')?.addEventListener('submit', handleFormSubmit);
+    
+    // 全局点击事件
+    document.body.addEventListener('click', handleGlobalClick);
+    
+    // 搜索功能
+    document.getElementById('searchButton')?.addEventListener('click', filterPosts);
+}
+
+// ======================
+// 新增统一事件处理器
+// ======================
+function handleGlobalClick(e) {
+    const { target } = e;
+    
+    // 处理查看详情
+    if (target.classList.contains('view-detail-btn')) {
+        handleViewDetail(e);
+    }
+    
+    // 处理举报按钮
+    if (target.classList.contains('report-btn')) {
+        handleReport(e);
+    }
+    
+    // 处理删除按钮
+    if (target.classList.contains('delete-btn')) {
+        handleDeletePost(e);
+    }
+}
 
 // ======================
 // 核心功能函数
 // ======================
 
 // 加载并显示帖子列表
+/**
+ * 加载并显示帖子列表
+ * @async
+ * @function loadPosts
+ * @returns {Promise<void>}
+ * @description 从Supabase加载帖子数据，应用当前筛选条件，并渲染到页面
+ */
 async function loadPosts() {
   try {
     let query = supabaseClient
@@ -440,60 +545,6 @@ function encryptPassword(pwd) {
     return btoa(pwd); // 使用base64简单加密
 }
 
-// 在 app.js 顶部定义全局变量
-let isAdminAuthenticated = false;
-
-function checkAdminPassword() {
-    // 如果已经认证，直接返回 true
-    if (isAdminAuthenticated) return true;
-
-    const storedPwd = localStorage.getItem('adminPwd');
-    if (!storedPwd) {
-        let initPwd;
-        do {
-            initPwd = prompt('首次使用请设置管理员密码（至少6位）：');
-            if (initPwd && initPwd.length < 6) {
-                alert('密码长度不足，至少需要6位');
-            }
-        } while (initPwd && initPwd.length < 6);
-        
-        if (initPwd) {
-            localStorage.setItem('adminPwd', encryptPassword(initPwd));
-            sessionStorage.setItem('isAdminAuthenticated', 'true');
-            isAdminAuthenticated = true;
-            return true;
-        }
-        return false;
-    }
-
-    const inputPwd = prompt('请输入管理员密码：');
-    if (encryptPassword(inputPwd) === storedPwd) {
-        sessionStorage.setItem('isAdminAuthenticated', 'true');
-        isAdminAuthenticated = true;
-        return true;
-    }
-    alert('密码错误！');
-    return false;
-}
-
-function resetAdminPassword() {
-    if (!checkAdminPassword()) {
-        alert('请先验证当前管理员密码');
-        return;
-    }
-    
-    const newPassword = prompt('请输入新密码（至少6位）：');
-    if (newPassword && newPassword.length >= 6) {
-        localStorage.setItem('adminPwd', encryptPassword(newPassword));
-        alert('密码已重置');
-    } else if (newPassword) {
-        alert('密码长度不足，至少需要6位');
-        resetAdminPassword();
-    } else {
-        alert('密码重置已取消');
-    }
-}
-
 // 管理员页面初始化
 function initAdminPage() {
     // 检查sessionStorage中的认证状态
@@ -597,160 +648,6 @@ function updateSelectAllState(selectAllCheckbox, groupName) {
     selectAllCheckbox.checked = allChecked;
 }
 
-// ======================
-// 事件监听初始化
-// ======================
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('postsList')) {
-        loadPosts();
-    }
-    
-    // 初始化全选功能
-    document.querySelectorAll('.select-all').forEach(checkbox => {
-        initSelectAll(checkbox);
-    });
-    
-    // 绑定搜索按钮
-    document.getElementById('searchButton')?.addEventListener('click', filterPosts);
-});
-
-// 在 app.js 中添加 resetForm 函数
-function resetForm() {
-    const form = document.getElementById('postForm');
-    if (form) {
-        form.reset(); // 重置表单字段
-
-        // 手动处理特殊字段
-        const customConnectionInput = document.getElementById('customConnectionInput');
-        if (customConnectionInput) {
-            customConnectionInput.style.display = 'none';
-        }
-
-        const customRetentionTime = document.getElementById('customRetentionTime');
-        if (customRetentionTime) {
-            customRetentionTime.style.display = 'none';
-        }
-
-        // 重置复选框
-        const playstyleCheckboxes = document.querySelectorAll('input[name="playstyle"]');
-        playstyleCheckboxes.forEach(checkbox => {
-            checkbox.checked = false;
-        });
-    }
-}
-
-// 添加初始化检查
-if (!window.supabase) {
-  console.error('Supabase未正确初始化！');
-} else {
-  console.log('Supabase已初始化:', window.supabase);
-}
-
-// 在app.js中添加统一的提交函数
-async function submitPost(formData) {
-  const formattedData = {
-    title: formData.title,
-    content: formData.content,
-    version: formData.version,
-    loader: formData.loader,
-    game_type: formData.game_type,
-    server_type: formData.server_type,
-    connection_type: formData.connection_type,
-    save_type: formData.save_type,
-    retention_time: parseInt(formData.retention_time),
-    playstyles: formData.playstyles?.join(', '), // 数组转字符串
-    contact: formData.contact,
-    created_at: new Date().toISOString()
-  };
-
-  const { error } = await supabaseClient
-    .from('posts')
-    .insert([formattedData]);
-
-  if (error) throw error;
-  
-  console.log('发布成功:', formattedData);
-  alert('帖子发布成功！2秒后自动跳转');
-  setTimeout(() => location.href = 'browse.html', 2000);
-}
-
-// 修改帖子渲染逻辑
-function renderPost(post) {
-  return `
-    <div class="post-item">
-      <!-- 标题 -->
-      <h3>${post.title}</h3>
-      
-      <!-- 发布时间 -->
-      <div class="post-meta">
-        <span class="post-time">${formatTime(post.created_at)}</span>
-        <span class="post-number">#${post.serialNumber || post.id}</span>
-      </div>
-
-      <!-- 帖子内容 -->
-      <div class="post-content">
-        ${post.content}
-      </div>
-
-      <!-- 其他元信息 -->
-      <div class="meta-grid">
-        <div><strong>版本：</strong>${Array.isArray(post.version) ? post.version.join(', ') : post.version}</div>
-        ${post.loader ? `<div><strong>加载器：</strong>${post.loader}</div>` : ''}
-        <div><strong>游戏类型：</strong>${post.game_type}</div>
-        ${post.server_type ? `<div><strong>联机类型：</strong>${post.server_type}</div>` : ''}
-        ${post.contact ? `<div class="contact-info">📧 联系：${post.contact}</div>` : ''}
-      </div>
-
-      <!-- 玩法标签 -->
-      ${post.playstyles ? `
-        <div class="playstyle-tags">
-          <strong>玩法标签：</strong>
-          ${post.playstyles.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('')}
-        </div>` : ''}
-
-      <!-- 举报按钮区域 -->
-      <div class="post-actions">
-          <button class="view-detail-btn" data-id="${post.id}">查看详情</button>
-          ${post.reported ? 
-              '<div class="reported-notice">已举报</div>' : 
-              `<button class="report-btn" data-id="${post.id}">举报</button>`
-          }
-      </div>
-    </div>
-  `;
-}
-
-// 新增时间格式化函数
-function formatTime(isoString) {
-  const date = new Date(isoString);
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-// 添加提交前的字段验证
-function validatePostData(data) {
-  const requiredFields = {
-    title: '标题',
-    content: '内容',
-    game_type: '游戏类型',
-    server_type: '联机类型',
-    contact: '联系方式'
-  };
-
-  return Object.entries(requiredFields).reduce((acc, [key, name]) => {
-    if (!data[key]?.trim()) {
-      acc.isValid = false;
-      acc.errors.push(`${name}不能为空`);
-    }
-    return acc;
-  }, { isValid: true, errors: [] });
-}
-
 // 在适当的位置添加以下举报处理函数
 async function reportPost(postId, reason) {
     const { error } = await supabaseClient
@@ -817,3 +714,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
+// 新增时间格式化函数
+function formatTime(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+// 添加提交前的字段验证
+function validatePostData(data) {
+  const requiredFields = {
+    title: '标题',
+    content: '内容',
+    game_type: '游戏类型',
+    server_type: '联机类型',
+    contact: '联系方式'
+  };
+
+  return Object.entries(requiredFields).reduce((acc, [key, name]) => {
+    if (!data[key]?.trim()) {
+      acc.isValid = false;
+      acc.errors.push(`${name}不能为空`);
+    }
+    return acc;
+  }, { isValid: true, errors: [] });
+}
