@@ -1,17 +1,9 @@
-// 在app.js最顶部添加初始化代码
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  'https://jzpcrdvffrpdyuetbefb.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
-);
-
 // ======================
 // 核心功能函数
 // ======================
 
 // 加载并显示帖子列表
-function loadPosts() {
+export async function loadPosts() {
     const container = document.getElementById('postsList');
     if (!container) return;
 
@@ -134,7 +126,7 @@ function loadPosts() {
 }
 
 // 根据筛选条件过滤帖子
-function filterPosts() {
+export function filterPosts() {
     const searchText = document.getElementById('searchInput').value.toLowerCase();
     const searchContact = document.getElementById('searchContact').checked;
     const { posts } = getStoredPosts();
@@ -694,3 +686,9 @@ function resetForm() {
         });
     }
 }
+
+// 导出supabase实例
+export const supabase = createClient(
+  'https://jzpcrdvffrpdyuetbefb.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
+);

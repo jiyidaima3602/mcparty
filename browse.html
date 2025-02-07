@@ -141,13 +141,14 @@
         <div id="postsList"></div>
     </div>
 
-    <script>
-        // 只保留事件监听
-        document.addEventListener('DOMContentLoaded', function() {
-            if (document.getElementById('postsList')) {
-                loadPosts();
-            }
-        });
+    <script type="module">
+      import { loadPosts } from './app.js';
+      
+      document.addEventListener('DOMContentLoaded', () => {
+        if (document.getElementById('postsList')) {
+          loadPosts();
+        }
+      });
     </script>
 </body>
 </html> 
