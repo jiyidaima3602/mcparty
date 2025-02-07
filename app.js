@@ -1,7 +1,7 @@
-// 在文件最顶部添加
+// 使用ESM导入方式
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-// 初始化并导出supabase实例
+// 初始化并导出Supabase实例
 export const supabase = createClient(
   'https://jzpcrdvffrpdyuetbefb.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
@@ -12,7 +12,7 @@ export const supabase = createClient(
 // ======================
 
 // 加载并显示帖子列表
-export const loadPosts = async () => {
+export async function loadPosts() {
   try {
     const { data: posts, error } = await supabase
       .from('posts')

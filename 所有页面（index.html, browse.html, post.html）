@@ -1,0 +1,5 @@
+<head>
+    <!-- 其他meta标签 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="app.js"></script>
+</head> 

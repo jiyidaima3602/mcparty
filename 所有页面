@@ -1,4 +1,8 @@
 <head>
     <!-- 其他meta标签 -->
     <script type="module" src="app.js"></script>
+    <script type="module">
+      import { loadPosts } from './app.js';
+      // 初始化代码...
+    </script>
 </head> 
