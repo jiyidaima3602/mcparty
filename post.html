@@ -5,14 +5,12 @@
     <title>帖子详情</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module">
-      import { supabase } from './app.js';
-
+    <script>
       document.addEventListener('DOMContentLoaded', async () => {
         const postId = new URLSearchParams(window.location.search).get('id');
         
-        // 从Supabase获取单个帖子
-        const { data: post, error } = await supabase
+        // 使用window.supabase
+        const { data: post, error } = await window.supabase
           .from('posts')
           .select('*')
           .eq('id', postId)
@@ -86,7 +84,7 @@
           const content = document.getElementById('content').value;
           
           // 替换原来的localStorage代码
-          const { data, error } = await supabase
+          const { data, error } = await window.supabase
               .from('posts')
               .insert([{ title, content }])
               .select()

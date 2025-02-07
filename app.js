@@ -12,14 +12,21 @@ async function loadPosts() {
       .from('posts')
       .select('*')
       .order('created_at', { ascending: false });
-    
-    // 渲染逻辑...
+
+    const container = document.getElementById('postsList');
+    container.innerHTML = posts.map(post => `
+      <div class="post-item">
+        <h3>${post.title}</h3>
+        <p>${post.content}</p>
+        <button onclick="window.location.href='post.html?id=${post.id}'">查看详情</button>
+      </div>
+    `).join('');
   } catch (error) {
     console.error('加载失败:', error);
   }
 }
 
-// 暴露函数到全局
+// 暴露到全局
 window.loadPosts = loadPosts;
 
 // 根据筛选条件过滤帖子
