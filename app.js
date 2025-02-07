@@ -251,12 +251,12 @@ async function handleSubmit(e) {
 
         if (!validatePost(newPost)) return;
 
-        // 修改保存调用
+        // 使用Supabase保存函数
         const savedPost = await savePostToSupabase(newPost);
         if (!savedPost) throw new Error('保存失败');
 
         resetForm();
-        await loadPosts(); // 重新加载最新数据
+        await loadPosts();
         alert('帖子提交成功！');
         
     } catch (error) {
