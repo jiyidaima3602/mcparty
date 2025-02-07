@@ -755,15 +755,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchAndDisplayPosts() {
     try {
-        // 修改后（使用已初始化的supabaseClient）
         const { data: posts, error } = await supabaseClient
-            .from('posts')  // 确保表名正确
+            .from('posts')  // 确保表名与Supabase后台一致
             .select('*')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
         
-        // 修改提示方式（替换showMessage）
+        // 替换showMessage为console.log
         if (!posts || posts.length === 0) {
             console.log('暂时没有帖子');
             return;
