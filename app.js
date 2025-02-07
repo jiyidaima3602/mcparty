@@ -130,8 +130,18 @@ function displayPosts(posts) {
 
     // 使用事件委托绑定举报按钮
     document.getElementById('postsList').addEventListener('click', function(e) {
+        const postId = e.target.dataset.id;
+        
+        // 处理查看详情
+        if (e.target.classList.contains('view-detail-btn')) {
+            handleViewDetail(e);
+            return;
+        }
+        
+        // 处理举报
         if (e.target.classList.contains('report-btn')) {
             handleReport(e);
+            return;
         }
     });
 
@@ -397,8 +407,9 @@ function clearTimeFilter() {
 
 // 查看详情
 function handleViewDetail(e) {
+    e.stopPropagation();
     const postId = e.target.dataset.id;
-    location.href = `post.html?id=${postId}`;
+    window.location.href = `post.html?id=${postId}`;
 }
 
 // 删除/恢复操作

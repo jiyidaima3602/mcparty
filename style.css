@@ -521,25 +521,16 @@ select[multiple] {
 
 .post-actions {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     gap: 10px;
+    margin-top: 15px;
+    justify-content: space-between;
 }
 
 /* 调整举报按钮样式 */
 .report-btn {
     background: #ff4444;
-    color: white;
-    padding: 8px 25px;
-    border-radius: 20px;
-    font-size: 14px;
-    transition: all 0.3s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.report-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    padding: 8px 20px;
+    flex-shrink: 0;
 }
 
 .reported-notice {
@@ -732,4 +723,36 @@ select[multiple] {
   padding: 10px;
   background: #f8f9fa;
   border-radius: 6px;
+}
+
+/* 修改操作按钮区域样式 */
+.post-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: space-between;
+}
+
+.view-detail-btn {
+    background: #1a73e8;
+    padding: 8px 20px;
+    flex-grow: 1;
+}
+
+.report-btn {
+    background: #ff4444;
+    padding: 8px 20px;
+    flex-shrink: 0;
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .post-actions {
+        flex-direction: column;
+    }
+    
+    .view-detail-btn,
+    .report-btn {
+        width: 100%;
+    }
 }
