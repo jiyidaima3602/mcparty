@@ -116,10 +116,24 @@ function displayPosts(posts) {
         container.appendChild(postEl);
     });
 
-    // 使用事件委托绑定点击事件
+    // 统一使用事件委托处理所有交互
     container.addEventListener('click', function(e) {
-        if (e.target.classList.contains('view-detail-btn')) {
-            handleViewDetail(e);
+        const target = e.target;
+        
+        // 处理查看详情
+        if (target.classList.contains('view-detail-btn')) {
+            e.preventDefault();
+            const postId = target.dataset.id;
+            if (postId) {
+                window.location.href = `post.html?id=${postId}`;
+            }
+            return;
+        }
+
+        // 处理举报按钮
+        if (target.classList.contains('report-btn')) {
+            handleReport(e);
+            return;
         }
     });
 
@@ -129,17 +143,6 @@ function displayPosts(posts) {
             btn.addEventListener('click', handleDeletePost);
         });
     }
-
-    // 使用事件委托绑定举报按钮
-    document.getElementById('postsList').addEventListener('click', function(e) {
-        const postId = e.target.dataset.id;
-        
-        // 处理举报
-        if (e.target.classList.contains('report-btn')) {
-            handleReport(e);
-            return;
-        }
-    });
 
     // 举报功能
     async function handleReport(e) {
