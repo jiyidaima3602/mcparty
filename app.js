@@ -613,11 +613,11 @@ async function submitPost(formData) {
     content: formData.content,
     version: formData.version,
     loader: formData.loader,
-    game_type: formData.gameType,  // 注意转换命名规范
-    server_type: formData.serverType,
-    connection_type: formData.connectionType,
-    save_type: formData.saveType,
-    retention_time: parseInt(formData.retentionTime),
+    game_type: formData.game_type,
+    server_type: formData.server_type,
+    connection_type: formData.connection_type,
+    save_type: formData.save_type,
+    retention_time: parseInt(formData.retention_time),
     playstyles: formData.playstyles?.join(', '), // 数组转字符串
     contact: formData.contact,
     created_at: new Date().toISOString()
