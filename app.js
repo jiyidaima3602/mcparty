@@ -789,3 +789,22 @@ function renderPost(post) {
     </div>
   `;
 }
+
+// ======================
+// 新增初始化函数
+// ======================
+function initPage() {
+    // 初始化页面元素
+    loadPosts();
+    initSelectAllCheckboxes();
+    bindGlobalEvents();
+}
+
+// ======================
+// 新增表单重置函数
+// ======================
+function resetForm() {
+    document.getElementById('postForm').reset();
+    document.getElementById('customRetentionTime').style.display = 'none';
+    document.getElementById('customConnectionInput').style.display = 'none';
+}
