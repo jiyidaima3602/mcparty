@@ -94,8 +94,9 @@ export function bindGlobalEvents() {
     document.body.addEventListener('click', handleGlobalClick);
 }
 
-// 增加默认导出
+// 修改默认导出部分
 export default {
     loadPosts,
-    renderPost
+    renderPost,
+    bindGlobalEvents
 }; 
