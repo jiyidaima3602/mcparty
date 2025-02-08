@@ -37,20 +37,47 @@ function bindFormEvents() {
 async function handleSubmit(e) {
     e.preventDefault();
     
+    const version = document.getElementById('version').value === '其他' ?
+        prompt('请输入自定义版本') :
+        document.getElementById('version').value;
+
+    const playstyles = Array.from(document.querySelectorAll('input[name="playstyle"]:checked'))
+                           .map(checkbox => checkbox.value)
+                           .join(',');
+
+    const connectionType = document.getElementById('connectionType').value === '其他' ?
+        document.getElementById('customConnection').value :
+        document.getElementById('connectionType').value;
+
+    const retentionTime = document.getElementById('retentionTime').value === 'custom' ?
+        parseInt(document.getElementById('customDays').value) :
+        parseInt(document.getElementById('retentionTime').value);
+
+    const customConnection = document.getElementById('customConnection').value;
+    if (document.getElementById('connectionType').value === '其他' && !customConnection) {
+        alert('请输入自定义联机方式');
+        return;
+    }
+
     const formData = {
         title: document.getElementById('title').value,
         content: document.getElementById('content').value,
-        version: handleVersionSelect(),
+        version: version,
         game_type: document.getElementById('gameType').value,
         server_type: document.getElementById('serverType').value,
-        connection_type: document.getElementById('connectionType').value,
+        connection_type: connectionType,
         save_type: document.getElementById('saveType').value,
-        retention_time: document.getElementById('retentionTime').value,
-        customRetention: document.getElementById('customRetention').value,
-        playstyles: getCheckedValues('playstyle'),
-        contact: document.getElementById('contact').value
+        playstyles: playstyles,
+        contact: document.getElementById('contact').value,
+        loader: document.getElementById('loader').value,
+        retention_time: retentionTime
     };
 
+    if (!formData.title.trim()) {
+        alert('请输入帖子标题');
+        return;
+    }
+    
     const validation = validatePost(formData);
     if (!validation.isValid) {
         alert(validation.errors.join('\n'));
