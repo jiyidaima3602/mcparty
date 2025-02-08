@@ -75,7 +75,6 @@ export function renderPost(post) {
     <div class="post-item">
       <h3>${post.title}</h3>
       <div class="post-meta">
-        <span>ID: ${post.id}</span>
         <span>${formatTime(post.created_at)}</span>
       </div>
       <div class="meta-grid">
