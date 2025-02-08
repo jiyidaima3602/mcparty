@@ -49,7 +49,7 @@ async function handleSubmit(e) {
         playstyles: getCheckedValues('playstyle')
     };
 
-    const validation = validatePostData(formData);
+    const validation = validatePost(formData);
     if (!validation.isValid) {
         alert(validation.errors.join('\n'));
         return;
@@ -77,15 +77,23 @@ function initDynamicFields() {
     // 版本选择处理
     function handleVersionSelect() {
         const select = document.getElementById('version');
-        return select.value === '其他' ? 
-            prompt('请输入自定义版本') : 
-            select.value;
+        if (select.value === '其他') {
+            const customVersion = prompt('请输入自定义版本');
+            return customVersion || '版本未指定';
+        }
+        return select.value;
     }
 
     // 联机类型变化
     function handleServerTypeChange(e) {
         const customInput = document.getElementById('customConnectionInput');
-        customInput.style.display = e.target.value === '其他' ? 'block' : 'none';
+        if (e.target.value === '其他') {
+            customInput.style.display = 'block';
+            customInput.querySelector('input').required = true;
+        } else {
+            customInput.style.display = 'none';
+            customInput.querySelector('input').required = false;
+        }
     }
 
     // 留存时间变化
@@ -108,12 +116,17 @@ function initDynamicFields() {
  */
 export function validatePost(formData) {
     const errors = [];
-    
-    if (!formData.title?.trim()) errors.push('标题不能为空');
-    if (!formData.content?.trim()) errors.push('内容不能为空');
-    if (!formData.version) errors.push('请选择游戏版本');
-    if (!formData.contact?.trim()) errors.push('联系方式不能为空');
-    
+    const requiredFields = {
+        title: '标题',
+        content: '内容',
+        version: '游戏版本',
+        contact: '联系方式'
+    };
+
+    Object.entries(requiredFields).forEach(([key, name]) => {
+        if (!formData[key]?.trim()) errors.push(`${name}不能为空`);
+    });
+
     if (formData.retentionTime === 'custom' && !formData.customRetention) {
         errors.push('请输入自定义留存时间');
     }

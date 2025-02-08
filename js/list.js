@@ -1,10 +1,21 @@
-import { fetchPostsFromSupabase, handleViewDetail, handleReport } from './app.js';
+import { fetchPostsFromSupabase } from './form.js';
+import { handleViewDetail, handleReport } from './app.js';
 import { initInteractions } from './interaction.js';
+import { formatTime } from './utils.js';
 
 /**
  * @file 帖子列表渲染模块，负责列表展示和基础交互
  * @module list
  */
+
+// 页面加载初始化
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.pathname.includes('browse.html')) {
+        loadPosts();
+        initSelectAllCheckboxes();
+        bindGlobalEvents();
+    }
+});
 
 // 帖子列表渲染功能
 export async function loadPosts() {
@@ -74,14 +85,8 @@ function initPostInteractions() {
     initInteractions();
 }
 
-// 时间格式化工具
-function formatTime(isoString) {
-  const date = new Date(isoString);
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-} 
+// 增加默认导出
+export default {
+    loadPosts,
+    renderPost
+}; 

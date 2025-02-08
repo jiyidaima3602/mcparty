@@ -1,4 +1,5 @@
 import { renderPost, fetchPostsFromSupabase } from './app.js';
+import { supabaseClient } from './supabase.js';
 
 /**
  * @file 筛选功能模块，处理多维度帖子筛选
@@ -233,4 +234,12 @@ function renderFilterResults(posts) {
 document.getElementById('searchButton')?.addEventListener('click', filterPosts);
 document.querySelectorAll('.filter-section input').forEach(input => {
     input.addEventListener('change', filterPosts);
-}); 
+});
+
+export function bindSearchEvents() {
+    document.getElementById('searchButton')?.addEventListener('click', filterPosts);
+}
+
+export async function filterPosts() {
+    // 实现搜索过滤逻辑
+} 

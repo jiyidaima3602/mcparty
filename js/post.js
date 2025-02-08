@@ -1,26 +1,36 @@
 // 发帖相关功能
-async function submitPost() {
-    // 获取所有表单字段
-    const formData = {
-        title: document.getElementById('title').value,
-        content: document.getElementById('content').value,
-        version: handleVersionSelect(), // 处理版本选择
-        gameType: document.getElementById('gameType').value,
-        // ...其他字段
-    };
+export async function submitPost(formData) {
+    try {
+        const { data, error } = await supabaseClient
+            .from('posts')
+            .insert([formData])
+            .select();
 
-    // 完整验证逻辑
-    if (!validatePost(formData)) return;
+        if (error) {
+            throw new Error(`数据库错误: ${error.message}`);
+        }
+        
+        return {
+            success: true,
+            postId: data[0]?.id
+        };
+    } catch (error) {
+        console.error('发帖失败:', error);
+        return {
+            success: false,
+            message: error.message
+        };
+    }
+}
 
-    // Supabase插入操作
-    const { data, error } = await supabase
-        .from('posts')
-        .insert([{ ...formData }]);
-
-    // 提交后处理
-    if (!error) {
-        resetForm();
-        window.location.href = 'browse.html'; 
+// 独立表单重置逻辑
+export function resetPostForm() {
+    const form = document.getElementById('postForm');
+    if (form) {
+        form.reset();
+        document.querySelectorAll('.dynamic-field').forEach(el => {
+            el.style.display = 'none';
+        });
     }
 }
 

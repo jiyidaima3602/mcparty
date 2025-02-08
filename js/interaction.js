@@ -113,4 +113,9 @@ export function initInteractions() {
             handleRestoreReport(e.target.dataset.id);
         }
     });
+}
+
+// 全局事件绑定转移到各模块
+export function bindGlobalEvents() {
+    document.body.addEventListener('click', handleGlobalClick);
 } 
