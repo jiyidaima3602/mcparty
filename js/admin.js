@@ -1,9 +1,6 @@
-import { supabaseClient } from './supabase.js';
+import { supabaseClient, SUPABASE_KEY } from './supabase.js';
 import { fetchPostsFromSupabase } from './form.js';
 import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js';
-
-// 在文件顶部添加
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM";
 
 // 管理员状态
 let isAdminAuthenticated = false;
