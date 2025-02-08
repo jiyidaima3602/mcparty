@@ -50,8 +50,8 @@ async function handleSubmit(e) {
         document.getElementById('connectionType').value;
 
     const retentionTime = document.getElementById('retentionTime').value === 'custom' ?
-        parseInt(document.getElementById('customDays').value) :
-        parseInt(document.getElementById('retentionTime').value);
+        parseInt(document.getElementById('customDays').value) * 1440 :
+        parseInt(document.getElementById('retentionTime').value) * 1440;
 
     const customConnection = document.getElementById('customConnection').value;
     if (document.getElementById('connectionType').value === '其他' && !customConnection) {
