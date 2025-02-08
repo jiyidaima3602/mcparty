@@ -130,6 +130,5 @@ export {
     handleReport,
     handleDeletePost,
     handleRestoreReport,
-    initInteractions,
     handleGlobalClick as bindGlobalEvents
 }; 
