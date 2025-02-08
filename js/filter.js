@@ -238,4 +238,24 @@ function renderFilterResults(posts) {
 document.addEventListener('DOMContentLoaded', () => {
     initFilters();
     filterPosts(); // 页面加载时立即执行筛选
-}); 
+});
+
+// 在文件顶部添加 handleQuickTimeFilter 函数
+export function handleQuickTimeFilter(event) {
+    const button = event.target;
+    const minutes = parseInt(button.dataset.minutes);
+    
+    // 移除其他按钮的激活状态
+    document.querySelectorAll('.quick-time-buttons button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // 切换当前按钮状态
+    button.classList.toggle('active');
+    
+    // 更新时间筛选条件
+    currentTimeFilter = button.classList.contains('active') ? minutes : null;
+    
+    // 应用筛选
+    filterPosts();
+} 
