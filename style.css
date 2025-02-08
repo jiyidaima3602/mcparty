@@ -860,3 +860,10 @@ select[multiple] {
 .view-btn:hover {
     background-color: #1557b0;
 }
+
+/* 确保管理员按钮可见 */
+.admin-actions button {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+}

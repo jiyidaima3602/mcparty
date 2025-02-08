@@ -23,10 +23,13 @@ export function initAdminPage() {
 // 会话认证检查
 function checkSessionAuth() {
     const sessionAuth = sessionStorage.getItem('isAdminAuthenticated') === 'true';
+    console.log('会话认证状态:', sessionAuth);
     if (sessionAuth) {
         isAdminAuthenticated = true;
+        console.log('已认证，开始加载帖子');
         loadAdminPosts();
     } else {
+        console.log('未认证，开始认证流程');
         authenticateAdmin();
     }
 }
@@ -63,7 +66,9 @@ async function checkAdminPassword() {
 // 加载管理界面帖子
 async function loadAdminPosts() {
     try {
+        console.log('开始加载管理员帖子');
         const posts = await fetchPostsFromSupabase();
+        console.log('获取到的帖子数据:', posts);
         if (!Array.isArray(posts)) {
             throw new Error('获取到的帖子数据格式不正确');
         }
@@ -71,7 +76,6 @@ async function loadAdminPosts() {
     } catch (error) {
         console.error('加载失败:', error);
         alert(`帖子加载失败: ${error.message}`);
-        // 清空容器显示错误
         const container = document.getElementById('adminPosts');
         if (container) {
             container.innerHTML = `<div class="error-tip">加载失败: ${error.message}</div>`;
@@ -157,4 +161,17 @@ export async function fetchPostsFromSupabase() {
         .order('created_at', { ascending: false });
     if (error) throw error;
     return data;
-} 
+}
+
+// 在控制台执行以下命令测试渲染
+// 模拟帖子数据
+const testPost = {
+    id: 999,
+    title: "测试帖子",
+    content: "这是一个测试内容".repeat(10),
+    created_at: new Date().toISOString(),
+    reported: false
+};
+
+// 测试渲染函数
+renderAdminPosts([testPost]); 
