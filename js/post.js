@@ -1,6 +1,9 @@
 // 在文件顶部添加导入
 import { supabaseClient } from '/js/supabase.js';
 
+// 在文件顶部添加全局变量
+let postCounter = parseInt(localStorage.getItem('postCounter')) || 0;
+
 // 发帖相关功能
 (function() {
     window.submitPost = async function(formData) {
@@ -29,10 +32,26 @@ import { supabaseClient } from '/js/supabase.js';
             if (error) {
                 throw new Error(`数据库错误: ${error.message}`);
             }
+
+            // 获取 Supabase 自动生成的 ID
+            const postId = data[0]?.id;
+
+            // 在联机详情文本顶部插入ID
+            const updatedContent = `帖子ID: ${postId}\n\n${formData.content}`;
+
+            // 更新帖子内容，插入 ID
+            const { error: updateError } = await supabaseClient
+                .from('posts')
+                .update({ content: updatedContent })
+                .eq('id', postId);
+
+            if (updateError) {
+                throw new Error(`更新帖子内容失败: ${updateError.message}`);
+            }
             
             return {
                 success: true,
-                postId: data[0]?.id
+                postId: postId
             };
         } catch (error) {
             console.error('发帖失败:', error);
