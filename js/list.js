@@ -26,18 +26,22 @@ function isBrowsePage() {
 export async function loadPosts() {
     try {
         const posts = await fetchPostsFromSupabase();
-        const container = document.getElementById('postsList');
-        
-        if (!container) return;
-
-        container.innerHTML = posts.length > 0 
-            ? posts.map(post => renderPost(post)).join('')
-            : '<div class="empty-tip">暂时没有帖子，快来发布第一条吧！</div>';
-            
-        initPostInteractions();
+        if (!Array.isArray(posts)) {
+            throw new Error('获取到的帖子数据格式不正确');
+        }
+        renderPosts(posts);
     } catch (error) {
         console.error('加载失败:', error);
-        alert('帖子加载失败，请刷新重试');
+        alert('帖子加载失败，请检查网络连接或联系管理员');
+        // 显示错误提示
+        const container = document.getElementById('postsList');
+        if (container) {
+            container.innerHTML = `
+                <div class="error-tip">
+                    <p>加载失败：${error.message}</p>
+                    <p>请稍后重试或联系管理员</p>
+                </div>`;
+        }
     }
 }
 

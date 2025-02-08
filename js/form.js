@@ -159,6 +159,7 @@ export async function fetchPostsFromSupabase() {
         .from('posts')
         .select('*')
         .order('created_at', { ascending: false });
+        
     if (error) throw error;
     return data;
 } 
