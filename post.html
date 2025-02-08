@@ -20,7 +20,17 @@
         if (postId) {
             const { data: post, error } = await supabase
                 .from('posts')
-                .select('*')
+                .select(`
+                    title,
+                    content,
+                    version,
+                    loader,
+                    game_type,
+                    server_type,
+                    connection_type,
+                    save_type,
+                    retention_time
+                `)
                 .eq('id', postId)
                 .single();
 

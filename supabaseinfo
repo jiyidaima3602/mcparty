@@ -15,3 +15,18 @@ create table public.posts (
   created_at timestamp with time zone null default now(),
   constraint posts_pkey primary key (id)
 ) TABLESPACE pg_default;
+
+create table public.admin (
+  id uuid not null default gen_random_uuid (),
+  password_hash text not null,
+  constraint admin_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create table public.reports (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  post_id uuid not null,
+  reason text null,
+  reported_at timestamp with time zone null default now(),
+  constraint reports_pkey primary key (id),
+  constraint reports_post_id_fkey foreign KEY (post_id) references posts (id)
+) TABLESPACE pg_default;

@@ -41,12 +41,14 @@ async function handleSubmit(e) {
         title: document.getElementById('title').value,
         content: document.getElementById('content').value,
         version: handleVersionSelect(),
-        gameType: document.getElementById('gameType').value,
-        serverType: document.getElementById('serverType').value,
-        contact: document.getElementById('contact').value,
-        retentionTime: document.getElementById('retentionTime').value,
+        game_type: document.getElementById('gameType').value,
+        server_type: document.getElementById('serverType').value,
+        connection_type: document.getElementById('connectionType').value,
+        save_type: document.getElementById('saveType').value,
+        retention_time: document.getElementById('retentionTime').value,
         customRetention: document.getElementById('customRetention').value,
-        playstyles: getCheckedValues('playstyle')
+        playstyles: getCheckedValues('playstyle'),
+        contact: document.getElementById('contact').value
     };
 
     const validation = validatePost(formData);
@@ -127,7 +129,7 @@ export function validatePost(formData) {
         if (!formData[key]?.trim()) errors.push(`${name}不能为空`);
     });
 
-    if (formData.retentionTime === 'custom' && !formData.customRetention) {
+    if (formData.retention_time === 'custom' && !formData.customRetention) {
         errors.push('请输入自定义留存时间');
     }
     

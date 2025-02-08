@@ -33,21 +33,20 @@ async function authenticateAdmin() {
 
 // 密码验证
 async function checkAdminPassword() {
-    const password = prompt('请输入管理员密码：');
-    if (!password) return false;
-    
-    // 从Supabase获取加密后的密码
-    const { data, error } = await supabaseClient
+    const { data } = await supabaseClient
         .from('admin')
         .select('password_hash')
         .single();
 
-    if (error) {
-        console.error('获取密码失败:', error);
+    if (data) {
+        const password = prompt('请输入管理员密码：');
+        if (!password) return false;
+        
+        return bcrypt.compareSync(password, data.password_hash);
+    } else {
+        console.error('管理员表不存在');
         return false;
     }
-    
-    return bcrypt.compareSync(password, data.password_hash);
 }
 
 // 加载管理界面帖子
