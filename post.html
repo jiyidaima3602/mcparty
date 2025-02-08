@@ -6,123 +6,57 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="./js/post.js"></script>
-    <script>
-      const { createClient } = supabase;
-      const supabaseClient = createClient(
-        'https://jzpcrdvffrpdyuetbefb.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM'
-      );
+    <script type="module" src="/js/supabase.js"></script>
+    <script type="module">
+      import { supabaseClient } from '/js/supabase.js';
 
       document.addEventListener('DOMContentLoaded', async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id');
-        
-        if (postId) {
-            const { data: post, error } = await supabase
-                .from('posts')
-                .select(`
-                    title,
-                    content,
-                    version,
-                    loader,
-                    game_type,
-                    server_type,
-                    connection_type,
-                    save_type,
-                    retention_time
-                `)
-                .eq('id', postId)
-                .single();
+          const postId = new URLSearchParams(window.location.search).get('id');
+          if (postId) {
+              try {
+                  const { data, error } = await supabaseClient
+                      .from('posts')
+                      .select('*')
+                      .eq('id', postId)
+                      .single();
 
-            if (error) {
-                console.error('获取帖子失败:', error);
-                return;
-            }
-            
-            if (post) {
-                document.getElementById('post-title').textContent = post.title;
-                document.getElementById('post-content').textContent = post.content;
-                document.getElementById('post-time').textContent = `发布时间：${formatTime(post.created_at)}`;
-            }
-        }
-
-        const detailContainer = document.getElementById('postDetail');
-        if (!post) {
-            detailContainer.innerHTML = '<p>帖子未找到</p>';
-            return;
-        }
-
-        // 构建详情内容
-        let htmlContent = `
-            <h2>${post.title}</h2>
-            <div class="post-meta-grid">
-                <div><strong>版本：</strong>${post.version}</div>
-                ${post.loader ? `<div><strong>加载器：</strong>${post.loader}</div>` : ''}
-                <div><strong>发布时间：</strong>${post.created_at}</div>
-                <div><strong>游戏类型：</strong>${post.game_type}</div>
-                <div><strong>联机类型：</strong>${post.server_type}</div>
-                <div><strong>联机方式：</strong>${post.connection_type}</div>
-                <div><strong>存档类型：</strong>${post.save_type}</div>
-                ${post.retention_time ? `<div><strong>留存时间：</strong>${formatRetentionTime(post.retention_time)}</div>` : ''}
-            </div>
-            <div class="post-content-section">
-                <h3>联机详情：</h3>
-                <div class="content-box">${post.content.replace(/\n/g, '<br>')}</div>
-            </div>
-        `;
-
-        if (post.playstyles) {
-            htmlContent += `
-                <div class="playstyle-section">
-                    <h3>玩法标签：</h3>
-                    <div class="tag-container">
-                        ${post.playstyles.split(', ').map(t => `<span class="tag">${t}</span>`).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        htmlContent += `
-            <div class="contact-section">
-                <h3>📧 联系方式：</h3>
-                <div class="contact-box">${post.contact}</div>
-            </div>
-        `;
-
-        detailContainer.innerHTML = htmlContent;
+                  if (error) throw error;
+                  
+                  if (data) {
+                      // 渲染帖子详情
+                      renderPostDetail(data);
+                  } else {
+                      alert('未找到该帖子');
+                  }
+              } catch (error) {
+                  console.error('加载帖子失败:', error);
+                  alert('加载帖子失败，请稍后重试');
+              }
+          } else {
+              alert('无效的帖子ID');
+          }
       });
 
-      // 辅助函数：转换留存时间为可读格式
-      function formatRetentionTime(minutes) {
-          const periods = [
-              { value: 525600, unit: '年' },  // 1年
-              { value: 43200, unit: '月' },    // 1月
-              { value: 10080, unit: '周' },    // 7天
-              { value: 1440, unit: '天' }      // 1天
-          ];
-          
-          for (let period of periods) {
-              if (minutes >= period.value) {
-                  return `${Math.floor(minutes/period.value)}${period.unit}`;
-              }
-          }
-          return `${minutes}分钟`;
-      }
-
-      async function submitPost() {
-          const title = document.getElementById('title').value;
-          const content = document.getElementById('content').value;
-          
-          // 替换原来的localStorage代码
-          const { data, error } = await supabase
-              .from('posts')
-              .insert([{ title, content }])
-              .select()
-
-          if (error) {
-              console.error('提交失败:', error);
-          } else {
-              window.location.href = 'browse.html';
+      function renderPostDetail(post) {
+          // 渲染帖子详情到页面
+          const container = document.getElementById('postDetail');
+          if (container) {
+              container.innerHTML = `
+                  <h2>${post.title}</h2>
+                  <div class="post-meta">
+                      <span>ID: ${post.id}</span>
+                      <span>${new Date(post.created_at).toLocaleString()}</span>
+                  </div>
+                  <div class="post-content">
+                      ${post.content}
+                  </div>
+                  <div class="post-meta-grid">
+                      <div><strong>联机类型：</strong>${post.connection_type || '未填写'}</div>
+                      <div><strong>游戏类型：</strong>${post.game_type || '未填写'}</div>
+                      <div><strong>联系方式：</strong>${post.contact || '未提供'}</div>
+                      <div><strong>留存时间：</strong>${post.retention_time}天</div>
+                  </div>
+              `;
           }
       }
     </script>
@@ -141,5 +75,6 @@
         <button onclick="window.history.back()">返回</button>
         <button class="report-btn" data-post-id="{{POST_ID}}">举报</button>
     </div>
+    <div id="postDetail"></div>
 </body>
 </html> 
