@@ -99,29 +99,33 @@ export async function handleRestoreReport(postId) {
  */
 export function initInteractions() {
     document.body.addEventListener('click', e => {
-        if (e.target.classList.contains('view-detail-btn')) {
+        if (e.target.closest('.view-detail-btn')) {
             handleViewDetail(e);
         }
-        if (e.target.classList.contains('report-btn')) {
+        if (e.target.closest('.report-btn')) {
             handleReport(e);
         }
-        if (e.target.classList.contains('delete-btn')) {
-            handleDeletePost(e.target.dataset.id);
+        if (e.target.closest('.delete-btn')) {
+            // 移除此处的事件处理，统一由handleGlobalClick处理
         }
-        if (e.target.classList.contains('restore-btn')) {
+        if (e.target.closest('.restore-btn')) {
             handleRestoreReport(e.target.dataset.id);
         }
     });
 }
 
-// 修改全局点击处理
+// 统一全局点击处理
 export function handleGlobalClick(event) {
-    // 原有处理逻辑...
+    // 处理返回按钮
+    if(event.target.closest('.back-btn')) {
+        history.back();
+    }
     
-    // 新增删除按钮处理
+    // 处理删除按钮
     if (event.target.closest('.delete-btn')) {
         const postId = event.target.dataset.id;
         handleDeletePost(postId);
+        return; // 阻止事件冒泡
     }
 }
 
