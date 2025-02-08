@@ -4,6 +4,7 @@ import { formatTime } from './utils.js';
 import { initSelectAllCheckboxes } from './filter.js';
 import { initInteractions } from './interaction.js';
 import { filterPosts } from './filter.js';
+import { checkAdminAuth } from './admin.js';
 
 /**
  * @file 帖子列表渲染模块，负责列表展示和基础交互
@@ -11,7 +12,12 @@ import { filterPosts } from './filter.js';
  */
 
 // 页面加载初始化
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    if (isAdminPage()) {
+        const isAuth = await checkAdminAuth(); // 来自admin.js
+        if (!isAuth) return;
+    }
+    
     if (isBrowsePage()) {
         loadPosts();
         initSelectAllCheckboxes();
@@ -21,6 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function isBrowsePage() {
     return window.location.pathname.includes('browse.html');
+}
+
+function isAdminPage() {
+    return window.location.pathname.includes('admin.html');
 }
 
 // 帖子列表渲染功能
@@ -84,7 +94,6 @@ export function renderPost(post) {
         ${post.playstyles.split(', ').map(style => `<span class="tag">${style}</span>`).join('')}
       </div>` : ''}
       <div class="post-actions">
-        <button class="view-detail-btn" data-post-id="${post.id}">查看详情</button>
         ${!post.reported ? 
           `<button class="report-btn" data-id="${post.id}">举报</button>` : 
           `<button class="report-btn reported" disabled>已举报</button>`

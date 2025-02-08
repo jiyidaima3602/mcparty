@@ -1,4 +1,3 @@
-
 create table public.posts (
   id bigint generated always as identity not null,
   title text not null,
@@ -30,3 +29,13 @@ create table public.reports (
   constraint reports_pkey primary key (id),
   constraint reports_post_id_fkey foreign KEY (post_id) references posts (id)
 ) TABLESPACE pg_default;
+
+-- 在posts表添加删除策略
+create policy "允许管理员删除帖子"
+on public.posts
+for delete using (
+  exists (
+    select 1 from public.admin
+    where auth.uid() = admin.id
+  )
+);

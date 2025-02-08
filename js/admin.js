@@ -174,4 +174,28 @@ const testPost = {
 };
 
 // 测试渲染函数
-renderAdminPosts([testPost]); 
+renderAdminPosts([testPost]);
+
+// 新增管理员认证检查
+export async function checkAdminAuth() {
+    const { data: { user }, error } = await supabaseClient.auth.getUser();
+    
+    if (!user || error) {
+        window.location.href = '/login.html';
+        return false;
+    }
+    
+    // 检查是否是注册管理员
+    const { data: admin, error: adminError } = await supabaseClient
+        .from('admin')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+    if (!admin || adminError) {
+        alert('权限不足');
+        window.location.href = '/';
+        return false;
+    }
+    return true;
+} 

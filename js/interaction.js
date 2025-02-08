@@ -15,31 +15,31 @@ export function handleViewDetail(e) {
 }
 
 // 举报功能
-export async function handleReport(e) {
-    const postId = e.target.dataset.id;
+export async function handleReport(event) {
+    const postId = event.target.dataset.id;
     if (!postId) return;
 
-    try {
-        const reason = prompt('请输入举报原因（可选）:');
-        const confirmDelete = confirm('确认要举报该内容吗？');
-        if (!confirmDelete) return;
+    const confirmReport = confirm('确定要举报该帖子吗？');
+    if (!confirmReport) return;
 
+    try {
         const { error } = await supabaseClient
-            .from('reports')
-            .insert([{
-                post_id: postId,
-                reason: reason || '不良信息',
+            .from('posts')
+            .update({ 
+                reported: true,
                 reported_at: new Date().toISOString()
-            }]);
+            })
+            .eq('id', postId);
 
         if (error) throw error;
-        
-        e.target.disabled = true;
-        e.target.textContent = '已举报';
-        alert('举报已提交！');
+
+        event.target.disabled = true;
+        event.target.textContent = '已举报';
+        event.target.classList.add('reported');
+        showToast('举报已提交，管理员将会审核处理', 'success');
     } catch (error) {
         console.error('举报失败:', error);
-        alert('举报失败: ' + error.message);
+        showToast('举报失败，请稍后重试', 'error');
     }
 }
 
@@ -48,17 +48,30 @@ export async function handleDeletePost(postId) {
     if (!confirm('确定要永久删除这个帖子吗？此操作不可撤销！')) return;
     
     try {
+        // 转换ID类型为数字
+        const numericId = Number(postId);
+        if (isNaN(numericId)) throw new Error('无效的帖子ID');
+
+        console.log('正在删除帖子ID:', numericId);
+        
         const { error } = await supabaseClient
             .from('posts')
             .delete()
-            .eq('id', postId);
+            .eq('id', numericId);  // 确保类型匹配
 
+        console.log('删除操作完成', error ? '有错误' : '成功');
+        
         if (error) throw error;
         alert('删除成功');
-        loadPosts(); // 刷新列表
+        loadPosts(); 
     } catch (error) {
-        console.error('删除失败:', error);
-        alert('删除失败: ' + error.message);
+        console.error('删除失败详情:', {
+            error,
+            postId,
+            type: typeof postId,
+            converted: Number(postId)
+        });
+        alert(`删除失败: ${error.message}`);
     }
 }
 
