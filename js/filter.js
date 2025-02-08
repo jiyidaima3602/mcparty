@@ -240,12 +240,8 @@ export function bindSearchEvents() {
     document.getElementById('searchButton')?.addEventListener('click', filterPosts);
 }
 
-// 完整导出筛选功能
+// 修改底部导出块
 export { 
     filterPosts,
-    bindSearchEvents,
-    initSelectAllCheckboxes,
-    setTimeFilter,
-    applyCustomTimeFilter,
-    clearTimeFilter
+    bindSearchEvents
 }; 

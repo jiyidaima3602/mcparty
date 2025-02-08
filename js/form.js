@@ -152,4 +152,13 @@ function getCheckedValues(name) {
         .map(input => input.value);
 }
 
-export function validatePostData(formData) { /* ... */ } 
+export function validatePostData(formData) { /* ... */ }
+
+export async function fetchPostsFromSupabase() {
+    const { data, error } = await supabaseClient
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+} 
