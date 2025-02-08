@@ -242,4 +242,14 @@ export function bindSearchEvents() {
 
 export async function filterPosts() {
     // 实现搜索过滤逻辑
-} 
+}
+
+// 完整导出筛选功能
+export { 
+    filterPosts,
+    bindSearchEvents,
+    initSelectAllCheckboxes,
+    setTimeFilter,
+    applyCustomTimeFilter,
+    clearTimeFilter
+}; 

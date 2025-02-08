@@ -3,8 +3,8 @@
  * @module app
  */
 
-// 仅保留全局通用功能
-export { handleViewDetail, handleReport } from './interaction.js';
+// 仅作为模块导出中转站
+export { handleViewDetail, handleReport } from './js/interaction.js';
 
 import { loadPosts } from './js/list.js';
 import { bindSearchEvents } from './js/filter.js';

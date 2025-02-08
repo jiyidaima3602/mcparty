@@ -1,4 +1,5 @@
-import { supabaseClient } from './app.js';
+import { supabaseClient } from './supabase.js';
+import { loadPosts } from './list.js';
 
 /**
  * @file 用户交互处理模块，包含帖子操作相关逻辑
@@ -118,4 +119,22 @@ export function initInteractions() {
 // 全局事件绑定转移到各模块
 export function bindGlobalEvents() {
     document.body.addEventListener('click', handleGlobalClick);
-} 
+}
+
+// 增加全局点击处理
+export function handleGlobalClick(e) {
+    // 处理通用点击逻辑
+    if(e.target.matches('.back-btn')) {
+        history.back();
+    }
+}
+
+// 确保所有交互功能都独立导出
+export { 
+    handleViewDetail,
+    handleReport,
+    handleDeletePost,
+    handleRestoreReport,
+    initInteractions,
+    bindGlobalEvents
+}; 

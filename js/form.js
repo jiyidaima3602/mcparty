@@ -1,4 +1,4 @@
-import { supabaseClient, validatePostData } from './app.js';
+import { supabaseClient } from './supabase.js';
 
 /**
  * @file 表单处理模块，包含表单验证和提交逻辑
@@ -148,4 +148,6 @@ export function resetForm() {
 function getCheckedValues(name) {
     return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
         .map(input => input.value);
-} 
+}
+
+export function validatePostData(formData) { /* ... */ } 

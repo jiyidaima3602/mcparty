@@ -1,5 +1,5 @@
 import { fetchPostsFromSupabase } from './form.js';
-import { handleViewDetail, handleReport } from './app.js';
+import { handleViewDetail, handleReport } from './interaction.js';
 import { initInteractions } from './interaction.js';
 import { formatTime } from './utils.js';
 
@@ -9,13 +9,17 @@ import { formatTime } from './utils.js';
  */
 
 // 页面加载初始化
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.pathname.includes('browse.html')) {
+document.addEventListener('DOMContentLoaded', () => {
+    if (isBrowsePage()) {
         loadPosts();
         initSelectAllCheckboxes();
         bindGlobalEvents();
     }
 });
+
+function isBrowsePage() {
+    return window.location.pathname.includes('browse.html');
+}
 
 // 帖子列表渲染功能
 export async function loadPosts() {
@@ -83,6 +87,11 @@ export function renderPost(post) {
 // 初始化帖子交互事件
 function initPostInteractions() {
     initInteractions();
+}
+
+// 增加全局事件绑定
+export function bindGlobalEvents() {
+    document.body.addEventListener('click', handleGlobalClick);
 }
 
 // 增加默认导出
