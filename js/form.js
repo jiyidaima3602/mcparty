@@ -158,7 +158,11 @@ export async function fetchPostsFromSupabase() {
     const { data, error } = await supabaseClient
         .from('posts')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .options({ headers: { 
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ADMIN_KEY}`,
+            'Prefer': 'return=representation' 
+        }});
     if (error) throw error;
     return data;
 } 
