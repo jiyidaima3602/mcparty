@@ -15,7 +15,7 @@
     <div class="container">
         <h1>发布Minecraft联机帖子</h1>
         
-        <form id="postForm" onsubmit="event.preventDefault(); submitPost()">
+        <form id="postForm">
             <div class="form-group">
                 <label for="title">帖子标题：</label>
                 <input type="text" id="title" required>
@@ -28,7 +28,7 @@
 
             <div class="form-group">
                 <label for="version">游戏版本：</label>
-                <select id="version" required onchange="handleVersionChange(this)">
+                <select id="version" required>
                     <option value="">请选择版本</option>
                     <option value="1.7.10">1.7.10</option>
                     <option value="1.12.2">1.12.2</option>
@@ -65,7 +65,7 @@
 
             <div class="form-group">
                 <label for="connectionType">联机方式：</label>
-                <select id="connectionType" required onchange="handleConnectionTypeChange(this)">
+                <select id="connectionType" required>
                     <option value="">请选择联机方式</option>
                     <option value="内网穿透（常见）">内网穿透（常见）</option>
                     <option value="RadminLAN">RadminLAN</option>
@@ -135,7 +135,7 @@
 
             <div class="form-group">
                 <label for="retentionTime">帖子留存时间：</label>
-                <select id="retentionTime" required onchange="handleRetentionTimeChange(this)">
+                <select id="retentionTime" required>
                     <option value="43200">1月</option>
                     <option value="1440">1天</option>
                     <option value="10080">7天</option>
@@ -156,25 +156,5 @@
             <button onclick="window.location.href='browse.html'">浏览帖子</button>
         </div>
     </div>
-
-    <script>
-    // 统一表单处理函数
-    async function handleSubmit(event) {
-        const formData = {
-            title: document.getElementById('title').value,
-            content: document.getElementById('content').value,
-            game_type: document.getElementById('gameType').value,
-            server_type: document.getElementById('serverType').value,
-            contact_info: document.getElementById('contact').value,
-            mod_loader: document.getElementById('loader').value,
-            version: document.getElementById('version').value,
-            retention_time: parseInt(document.getElementById('retentionTime').value),
-            created_at: new Date().toISOString()
-        };
-
-        // 调用统一提交函数
-        await submitPost(formData);
-    }
-    </script>
 </body>
 </html>
