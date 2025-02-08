@@ -116,11 +116,6 @@ export function initInteractions() {
     });
 }
 
-// 全局事件绑定转移到各模块
-export function bindGlobalEvents() {
-    document.body.addEventListener('click', handleGlobalClick);
-}
-
 // 增加全局点击处理
 export function handleGlobalClick(e) {
     // 处理通用点击逻辑
@@ -136,5 +131,5 @@ export {
     handleDeletePost,
     handleRestoreReport,
     initInteractions,
-    bindGlobalEvents
+    handleGlobalClick as bindGlobalEvents
 }; 

@@ -1,6 +1,5 @@
 import { fetchPostsFromSupabase } from './form.js';
-import { handleViewDetail, handleReport } from './interaction.js';
-import { initInteractions } from './interaction.js';
+import { handleViewDetail, handleReport, handleGlobalClick } from './interaction.js';
 import { formatTime } from './utils.js';
 
 /**
@@ -89,7 +88,7 @@ function initPostInteractions() {
     initInteractions();
 }
 
-// 增加全局事件绑定
+// 修改全局事件绑定函数
 export function bindGlobalEvents() {
     document.body.addEventListener('click', handleGlobalClick);
 }
