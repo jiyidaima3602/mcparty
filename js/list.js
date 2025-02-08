@@ -29,7 +29,16 @@ export async function loadPosts() {
         if (!Array.isArray(posts)) {
             throw new Error('获取到的帖子数据格式不正确');
         }
-        renderPosts(posts);
+        
+        const container = document.getElementById('postsList');
+        if (!container) return;
+
+        // 使用 renderPost 渲染每个帖子
+        container.innerHTML = posts.length > 0 
+            ? posts.map(post => renderPost(post)).join('')
+            : '<div class="empty-tip">暂时没有帖子，快来发布第一条吧！</div>';
+        
+        initPostInteractions();
     } catch (error) {
         console.error('加载失败:', error);
         alert('帖子加载失败，请检查网络连接或联系管理员');
