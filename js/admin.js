@@ -109,7 +109,10 @@ function renderAdminPosts(posts) {
 
 // 绑定管理员事件
 function bindAdminEvents() {
-    document.getElementById('adminPosts').addEventListener('click', async (e) => {
+    const adminPostsContainer = document.getElementById('adminPosts');
+    if (!adminPostsContainer) return;
+
+    adminPostsContainer.addEventListener('click', async (e) => {
         const postId = e.target.dataset.id;
         if (e.target.classList.contains('delete-btn')) {
             await handleAdminDelete(postId);
@@ -119,7 +122,7 @@ function bindAdminEvents() {
 
 // 管理员删除操作
 async function handleAdminDelete(postId) {
-    if (!confirm('确定要永久删除该帖子吗？')) return;
+    if (!confirm('确定要永久删除该帖子吗？此操作不可撤销！')) return;
 
     try {
         const { error } = await supabaseClient
