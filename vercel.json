@@ -8,6 +8,12 @@
     }
   ],
   "routes": [
-    { "src": "/js/(.*)", "dest": "/js/$1" }
+    {
+      "src": "/js/(.*)",
+      "dest": "/js/$1",
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
+    }
   ]
 } 

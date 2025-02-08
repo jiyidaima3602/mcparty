@@ -1,4 +1,4 @@
-import { initPostForm } from './js/post.js';
+import { initPostForm } from './post.js';
 
 // 初始化页面功能
 document.addEventListener('DOMContentLoaded', () => {
