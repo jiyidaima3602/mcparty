@@ -12,4 +12,16 @@ export function formatTime(isoString) {
     hour: '2-digit',
     minute: '2-digit'
   });
+}
+
+export function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 } 

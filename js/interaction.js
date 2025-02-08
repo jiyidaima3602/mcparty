@@ -111,20 +111,18 @@ export async function handleRestoreReport(postId) {
  *   - 恢复（.restore-btn）
  */
 export function initInteractions() {
-    document.body.addEventListener('click', e => {
-        if (e.target.closest('.view-detail-btn')) {
-            handleViewDetail(e);
-        }
-        if (e.target.closest('.report-btn')) {
+    // 移除旧的监听器
+    document.body.removeEventListener('click', globalClickListener);
+    
+    // 使用更可靠的事件委托方式
+    const globalClickListener = (e) => {
+        if (e.target.matches('.report-btn:not(.reported)')) {
             handleReport(e);
         }
-        if (e.target.closest('.delete-btn')) {
-            // 移除此处的事件处理，统一由handleGlobalClick处理
-        }
-        if (e.target.closest('.restore-btn')) {
-            handleRestoreReport(e.target.dataset.id);
-        }
-    });
+        // 其他事件处理...
+    };
+    
+    document.body.addEventListener('click', globalClickListener);
 }
 
 // 统一全局点击处理
