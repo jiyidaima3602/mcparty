@@ -86,24 +86,34 @@ function renderAdminPosts(posts) {
         console.error('找不到adminPosts容器');
         return;
     }
+
+    // 添加调试信息
+    console.log('正在渲染帖子:', posts);
     
     container.innerHTML = posts.length > 0 
-        ? posts.map(post => `
-            <div class="admin-post" data-post-id="${post.id}">
-                <h4>${post.title} (ID: ${post.id})</h4>
-                <p>${post.content.substring(0, 50)}...</p>
-                <div class="post-meta">
-                    <span>创建时间：${new Date(post.created_at).toLocaleString()}</span>
-                    <span class="${post.reported ? 'reported' : ''}">
-                        ${post.reported ? '已举报' : '正常'}
-                    </span>
+        ? posts.map(post => {
+            // 检查每个帖子的必要字段
+            if (!post.id || !post.title || !post.content) {
+                console.warn('帖子数据不完整:', post);
+                return '';
+            }
+            return `
+                <div class="admin-post" data-post-id="${post.id}">
+                    <h4>${post.title} (ID: ${post.id})</h4>
+                    <p>${post.content.substring(0, 50)}...</p>
+                    <div class="post-meta">
+                        <span>创建时间：${new Date(post.created_at).toLocaleString()}</span>
+                        <span class="${post.reported ? 'reported' : ''}">
+                            ${post.reported ? '已举报' : '正常'}
+                        </span>
+                    </div>
+                    <div class="admin-actions">
+                        <button class="delete-btn" data-id="${post.id}">删除</button>
+                        <button class="view-btn" data-id="${post.id}">查看详情</button>
+                    </div>
                 </div>
-                <div class="admin-actions">
-                    <button class="delete-btn" data-id="${post.id}">删除</button>
-                    <button class="view-btn" data-id="${post.id}">查看详情</button>
-                </div>
-            </div>
-        `).join('')
+            `;
+        }).join('')
         : '<div class="empty-tip">暂无帖子</div>';
 }
 
