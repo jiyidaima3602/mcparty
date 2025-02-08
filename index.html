@@ -7,13 +7,15 @@
     <script src="https://alcdn.msauth.net/browser/2.24.0/js/msal-browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@polkadot/api@9.8.2/bundle/polkadot-api.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
+    <script type="module" src="js/post.js"></script>
+    <script type="module" src="js/form.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>发布Minecraft联机帖子</h1>
         
-        <form id="postForm">
+        <form id="postForm" onsubmit="event.preventDefault(); submitPost()">
             <div class="form-group">
                 <label for="title">帖子标题：</label>
                 <input type="text" id="title" required>
