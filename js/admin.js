@@ -1,4 +1,5 @@
-import { supabaseClient, fetchPostsFromSupabase } from './app.js';
+import { supabaseClient } from './supabase.js';
+import { fetchPostsFromSupabase } from './form.js';
 
 // 管理员状态
 let isAdminAuthenticated = false;

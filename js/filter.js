@@ -1,5 +1,6 @@
 import { renderPost, fetchPostsFromSupabase } from './app.js';
 import { supabaseClient } from './supabase.js';
+import { fetchPostsFromSupabase as formFetchPostsFromSupabase } from './form.js';
 
 /**
  * @file 筛选功能模块，处理多维度帖子筛选
@@ -153,7 +154,7 @@ function updateFilters() {
 // ======================
 async function filterPosts() {
     try {
-        const posts = await fetchPostsFromSupabase();
+        const posts = await formFetchPostsFromSupabase();
         const filtered = posts.filter(post => {
             return (
                 checkVersion(post.version) &&
