@@ -165,7 +165,8 @@ export async function filterPosts() {
                 checkServer(post.server_type) &&
                 checkSave(post.save_type) &&
                 checkTime(post.created_at) &&
-                checkSearch(post)
+                checkSearch(post) &&
+                checkReport(getCheckedValues('filter-report'), post.reported)
             );
         });
         renderFilterResults(filtered);

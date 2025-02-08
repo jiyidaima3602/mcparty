@@ -76,12 +76,12 @@
                     <h3>时间筛选</h3>
                     <div class="time-filter">
                         <div class="quick-time-buttons">
-                            <button onclick="setTimeFilter(5)">5分钟</button>
-                            <button onclick="setTimeFilter(60)">1小时</button>
-                            <button onclick="setTimeFilter(1440)">1天</button>
-                            <button onclick="setTimeFilter(10080)">7天</button>
-                            <button onclick="setTimeFilter(43200)">1月</button>
-                            <button onclick="setTimeFilter(525600)">1年</button>
+                            <button data-minutes="5">5分钟</button>
+                            <button data-minutes="60">1小时</button>
+                            <button data-minutes="1440">1天</button>
+                            <button data-minutes="10080">7天</button>
+                            <button data-minutes="43200">1月</button>
+                            <button data-minutes="525600">1年</button>
                         </div>
                         <div class="custom-time">
                             <label for="startDate">开始日期：</label>
@@ -142,6 +142,14 @@
         <div id="adminPosts" class="admin-posts-container"></div>
     </div>
 
-    <script type="module" src="/js/admin.js"></script>
+    <script type="module">
+        import { initFilters, filterPosts } from '/js/filter.js';
+        import { loadPosts } from '/js/list.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initFilters();
+            filterPosts(); // 确保页面加载时执行筛选
+        });
+    </script>
 </body>
 </html>
