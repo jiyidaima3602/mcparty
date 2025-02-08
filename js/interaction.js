@@ -126,9 +126,9 @@ export function handleGlobalClick(e) {
 
 // 确保所有交互功能都独立导出
 export { 
-    handleViewDetail,
-    handleReport,
-    handleDeletePost,
-    handleRestoreReport,
+    // handleViewDetail,  // 已单独导出
+    // handleReport,      // 已单独导出
+    // handleDeletePost,  // 已单独导出
+    // handleRestoreReport, // 已单独导出
     handleGlobalClick as bindGlobalEvents
 }; 
