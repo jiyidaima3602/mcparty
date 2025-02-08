@@ -44,10 +44,9 @@ export async function handleReport(e) {
 }
 
 // 删除功能（管理员）
-export async function handleDeletePost(e) {
-    const postId = e.target.dataset.id;
-    if (!postId || !confirm('确定要删除该帖子吗？')) return;
-
+export async function handleDeletePost(postId) {
+    if (!confirm('确定要永久删除这个帖子吗？此操作不可撤销！')) return;
+    
     try {
         const { error } = await supabaseClient
             .from('posts')
@@ -55,9 +54,8 @@ export async function handleDeletePost(e) {
             .eq('id', postId);
 
         if (error) throw error;
-        
-        alert('删除成功！');
-        window.location.reload();
+        alert('删除成功');
+        loadPosts(); // 刷新列表
     } catch (error) {
         console.error('删除失败:', error);
         alert('删除失败: ' + error.message);
@@ -108,7 +106,7 @@ export function initInteractions() {
             handleReport(e);
         }
         if (e.target.classList.contains('delete-btn')) {
-            handleDeletePost(e);
+            handleDeletePost(e.target.dataset.id);
         }
         if (e.target.classList.contains('restore-btn')) {
             handleRestoreReport(e.target.dataset.id);
@@ -116,11 +114,14 @@ export function initInteractions() {
     });
 }
 
-// 增加全局点击处理
-export function handleGlobalClick(e) {
-    // 处理通用点击逻辑
-    if(e.target.matches('.back-btn')) {
-        history.back();
+// 修改全局点击处理
+export function handleGlobalClick(event) {
+    // 原有处理逻辑...
+    
+    // 新增删除按钮处理
+    if (event.target.closest('.delete-btn')) {
+        const postId = event.target.dataset.id;
+        handleDeletePost(postId);
     }
 }
 

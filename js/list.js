@@ -58,6 +58,8 @@ export async function loadPosts() {
  * });
  */
 export function renderPost(post) {
+    const isAdminPage = window.location.pathname.includes('admin.html');
+    
     return `
     <div class="post-item">
       <h3>${post.title}</h3>
@@ -87,6 +89,7 @@ export function renderPost(post) {
           `<button class="report-btn" data-id="${post.id}">举报</button>` : 
           `<button class="report-btn reported" disabled>已举报</button>`
         }
+        ${isAdminPage ? `<button class="delete-btn" data-id="${post.id}">删除</button>` : ''}
       </div>
     </div>`;
 }
