@@ -126,8 +126,9 @@ export function initFilters() {
     document.getElementById('clearTimeFilter')?.addEventListener('click', clearTimeFilter);
     
     // 搜索功能
-    document.getElementById('searchButton')?.addEventListener('click', () => {
-        currentFilters.search = document.getElementById('searchInput').value;
+    const searchInput = document.getElementById('searchInput');
+    searchInput?.addEventListener('input', () => {
+        currentFilters.search = searchInput.value;
         filterPosts();
     });
 }
@@ -152,7 +153,7 @@ function updateFilters() {
 // 功能：多维度联合筛选
 // 依赖：所有check*函数
 // ======================
-async function filterPosts() {
+export async function filterPosts() {
     try {
         const posts = await fetchPostsFromSupabase();
         const filtered = posts.filter(post => {
@@ -233,15 +234,11 @@ function renderFilterResults(posts) {
     }
 }
 
-// 初始化筛选事件
-document.getElementById('searchButton')?.addEventListener('click', filterPosts);
-document.querySelectorAll('.filter-section input').forEach(input => {
-    input.addEventListener('change', filterPosts);
+// 在文件底部添加初始化调用
+document.addEventListener('DOMContentLoaded', () => {
+    initFilters();
+    filterPosts(); // 页面加载时立即执行筛选
 });
-
-export function bindSearchEvents() {
-    document.getElementById('searchButton')?.addEventListener('click', filterPosts);
-}
 
 // 文件底部统一导出
 export { 

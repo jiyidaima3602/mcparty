@@ -3,6 +3,7 @@ import { handleViewDetail, handleReport, handleGlobalClick } from './interaction
 import { formatTime } from './utils.js';
 import { initSelectAllCheckboxes } from './filter.js';
 import { initInteractions } from './interaction.js';
+import { filterPosts } from './filter.js';
 
 /**
  * @file 帖子列表渲染模块，负责列表展示和基础交互
@@ -25,24 +26,10 @@ function isBrowsePage() {
 // 帖子列表渲染功能
 export async function loadPosts() {
     try {
-        const posts = await fetchPostsFromSupabase();
-        if (!Array.isArray(posts)) {
-            throw new Error('获取到的帖子数据格式不正确');
-        }
-        
-        const container = document.getElementById('postsList');
-        if (!container) return;
-
-        // 使用 renderPost 渲染每个帖子
-        container.innerHTML = posts.length > 0 
-            ? posts.map(post => renderPost(post)).join('')
-            : '<div class="empty-tip">暂时没有帖子，快来发布第一条吧！</div>';
-        
-        initPostInteractions();
+        await filterPosts(); // 改为调用筛选函数
     } catch (error) {
         console.error('加载失败:', error);
         alert('帖子加载失败，请检查网络连接或联系管理员');
-        // 显示错误提示
         const container = document.getElementById('postsList');
         if (container) {
             container.innerHTML = `
