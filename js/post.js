@@ -1,3 +1,6 @@
+// 在文件顶部添加导入
+import { supabaseClient } from '/js/supabase.js';
+
 // 发帖相关功能
 (function() {
     window.submitPost = async function(formData) {
