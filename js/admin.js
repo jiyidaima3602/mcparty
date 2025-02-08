@@ -141,9 +141,7 @@ export async function fetchPostsFromSupabase() {
     const { data, error } = await supabaseClient
         .from('posts')
         .select('*')
-        .order('created_at', { ascending: false })
-        // 添加管理员权限头
-        .options({ headers: { 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ADMIN_KEY}` } });
+        .order('created_at', { ascending: false });
     if (error) throw error;
     return data;
 } 
