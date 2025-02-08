@@ -142,14 +142,12 @@
         <div id="adminPosts" class="admin-posts-container"></div>
     </div>
 
-    <script type="module">
-        import { initFilters, filterPosts } from '/js/filter.js';
-        import { loadPosts } from '/js/list.js';
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            initFilters();
-            filterPosts(); // 确保页面加载时执行筛选
-        });
-    </script>
+    <div class="posts-container" id="postsList"></div>
+
+    <script type="module" src="/js/supabase.js"></script>
+    <script type="module" src="/js/list.js"></script>
+    <script type="module" src="/js/interaction.js"></script>
+    <script type="module" src="/js/post.js"></script>
+    <script type="module" src="/js/filter.js"></script>
 </body>
 </html>
