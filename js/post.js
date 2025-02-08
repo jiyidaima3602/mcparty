@@ -141,7 +141,6 @@ export function handleRetentionTimeChange(select) {
     customInput.style.display = select.value === 'custom' ? 'block' : 'none';
 }
 
-// 修改后的导出列表
 export { 
     handleVersionSelect,
     handleConnectionTypeChange,

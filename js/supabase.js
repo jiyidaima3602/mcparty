@@ -8,6 +8,17 @@ if (typeof window === 'undefined') {
     throw new Error('此模块仅限浏览器环境使用');
 }
 
+// 在文件顶部添加环境变量检查
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    throw new Error(`
+        缺少Supabase配置！请检查：
+        1. 项目根目录下是否有.env.local文件
+        2. 文件中是否包含：
+           VITE_SUPABASE_URL=您的Supabase_URL
+           VITE_SUPABASE_ANON_KEY=您的公开anon密钥
+    `);
+}
+
 import { createClient } from '@supabase/supabase-js';
 
 // 从环境变量读取配置
