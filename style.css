@@ -779,3 +779,38 @@ select[multiple] {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+
+/* 统一按钮样式 */
+.action-btn {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px;
+    transition: background 0.3s ease;
+}
+
+.action-btn:hover {
+    background: #1557b0;
+}
+
+/* 举报按钮特殊样式 */
+.report-btn {
+    background: #dc3545;
+}
+
+.report-btn:hover {
+    background: #c82333;
+}
+
+/* 按钮容器布局 */
+.post-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}

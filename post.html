@@ -72,8 +72,10 @@
             </div>
             <div class="post-content" id="post-content"></div>
         </div>
-        <button onclick="window.history.back()">返回</button>
-        <button class="report-btn" data-post-id="{{POST_ID}}">举报</button>
+        <div class="post-actions">
+            <button class="action-btn" onclick="window.history.back()">返回</button>
+            <button class="action-btn report-btn" data-post-id="{{POST_ID}}">举报</button>
+        </div>
     </div>
     <div id="postDetail"></div>
 </body>
