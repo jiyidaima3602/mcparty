@@ -84,7 +84,6 @@ export function renderPost(post) {
         <div><strong>留存时间：</strong>${post.retention_time}天</div>
       </div>
       <div class="post-content">
-        <p><strong>帖子ID:</strong> ${post.id}</p>
         ${post.content}
       </div>
       ${post.playstyles ? `
