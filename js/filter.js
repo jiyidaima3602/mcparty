@@ -238,9 +238,4 @@ function renderFilterResults(posts) {
 document.addEventListener('DOMContentLoaded', () => {
     initFilters();
     filterPosts(); // 页面加载时立即执行筛选
-});
-
-// 文件底部统一导出
-export { 
-    filterPosts
-}; 
+}); 
