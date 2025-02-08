@@ -3,6 +3,11 @@
  * @module supabase
  */
 
+// 在文件顶部添加浏览器环境检查
+if (typeof window === 'undefined') {
+    throw new Error('此模块仅限浏览器环境使用');
+}
+
 import { createClient } from '@supabase/supabase-js';
 
 // 从环境变量读取配置

@@ -142,9 +142,8 @@ export function handleRetentionTimeChange(select) {
 }
 
 // 修改后的导出列表
-export {
+export { 
     handleVersionSelect,
     handleConnectionTypeChange,
-    handleRetentionTimeChange,
-    initPostForm
+    handleRetentionTimeChange
 }; 
