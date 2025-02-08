@@ -19,17 +19,19 @@ if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KE
     `);
 }
 
-import { createClient } from '@supabase/supabase-js';
+// 修改supabase.js的导入方式
+// 移除原有import语句，改为CDN直接引入
+const { createClient } = supabase;
 
-// 移除Vite环境变量依赖，改为直接配置
+// 保持配置不变
 const supabaseConfig = {
     url: "https://jzpcrdvffrpdyuetbefb.supabase.co",
     key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM"
 };
 
-// 添加配置验证
+// 验证配置
 if (!supabaseConfig.url || !supabaseConfig.key) {
-    throw new Error("Supabase配置信息不完整，请检查数据库连接配置");
+    throw new Error("数据库配置错误，请联系管理员");
 }
 
 export const supabaseClient = createClient(supabaseConfig.url, supabaseConfig.key); 

@@ -139,10 +139,4 @@ export function handleConnectionTypeChange(select) {
 export function handleRetentionTimeChange(select) {
     const customInput = document.getElementById('customRetentionTime');
     customInput.style.display = select.value === 'custom' ? 'block' : 'none';
-}
-
-export { 
-    handleVersionSelect,
-    handleConnectionTypeChange,
-    handleRetentionTimeChange
-}; 
+} 
