@@ -213,22 +213,24 @@ function checkTime(createdAt) {
         const cutoff = Date.now() - currentTimeFilter * 60000;
         return postTime >= cutoff;
     }
-    return postTime >= currentTimeFilter.start && postTime <= currentTimeFilter.end;
+    return postTime >= currentTimeFilter.start.getTime() && postTime <= currentTimeFilter.end.getTime();
 }
 
 function checkSearch(post) {
     const searchText = currentFilters.search.toLowerCase();
     if (!searchText) return true;
     return [post.title, post.content, post.contact].some(
-        text => text.toLowerCase().includes(searchText)
+        text => text && text.toLowerCase().includes(searchText)
     );
 }
 
 function renderFilterResults(posts) {
     const container = document.getElementById('postsList');
-    container.innerHTML = posts.length > 0 
-        ? posts.map(post => renderPost(post)).join('')
-        : '<div class="empty-tip">没有找到匹配的帖子</div>';
+    if (container) {
+        container.innerHTML = posts.length > 0 
+            ? posts.map(post => renderPost(post)).join('')
+            : '<div class="empty-tip">没有找到匹配的帖子</div>';
+    }
 }
 
 // 初始化筛选事件
