@@ -160,7 +160,7 @@ export async function fetchPostsFromSupabase() {
         .select('*')
         .order('created_at', { ascending: false })
         .options({ headers: { 
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ADMIN_KEY}`,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
             'Prefer': 'return=representation' 
         }});
     if (error) throw error;
