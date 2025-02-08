@@ -1,6 +1,8 @@
 import { fetchPostsFromSupabase } from './form.js';
 import { handleViewDetail, handleReport, handleGlobalClick } from './interaction.js';
 import { formatTime } from './utils.js';
+import { initSelectAllCheckboxes } from './filter.js';
+import { initInteractions } from './interaction.js';
 
 /**
  * @file 帖子列表渲染模块，负责列表展示和基础交互

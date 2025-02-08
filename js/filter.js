@@ -240,8 +240,7 @@ export function bindSearchEvents() {
     document.getElementById('searchButton')?.addEventListener('click', filterPosts);
 }
 
-// 修改底部导出块
+// 修改后的导出块
 export { 
-    filterPosts,
-    bindSearchEvents
+    filterPosts
 }; 
