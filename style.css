@@ -762,3 +762,20 @@ select[multiple] {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+/* 添加加载状态样式 */
+#submitBtn:disabled {
+    background: #9e9e9e;
+    cursor: not-allowed;
+}
+
+.loading-spinner {
+    display: inline-block;
+    margin-left: 8px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

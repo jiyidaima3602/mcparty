@@ -65,7 +65,26 @@
         if (form) {
             form.addEventListener('submit', async (event) => {
                 event.preventDefault();
-                await handleSubmit();
+                // 添加加载状态提示
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '提交中...';
+                
+                try {
+                    const result = await handleSubmit();
+                    if (result && result.success) {
+                        alert('帖子提交成功！');
+                        window.location.href = 'browse.html';
+                    } else if (result) {
+                        alert(`提交失败：${result.message}`);
+                    }
+                } catch (error) {
+                    console.error('提交异常:', error);
+                    alert('提交过程中发生错误，请查看控制台');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '发布帖子';
+                }
             });
 
             // 添加版本选择事件
@@ -86,7 +105,7 @@
     });
 
     // 表单提交处理
-    async function handleSubmit() {
+    window.handleSubmit = async function() {
         // 修改版本获取方式
         const version = document.getElementById('version').value === '其他' ?
             prompt('请输入自定义版本') :
@@ -127,8 +146,25 @@
             retention_time: retentionTime
         };
 
-        return submitPost(formData);
-    }
+        // 在收集数据后添加验证
+        if (!formData.title.trim()) {
+            alert('请输入帖子标题');
+            return;
+        }
+        
+        // 其他验证逻辑...
+        
+        // 在最后添加错误处理
+        try {
+            return await window.submitPost(formData);
+        } catch (error) {
+            console.error('表单处理错误:', error);
+            return {
+                success: false,
+                message: error.message || '未知错误'
+            };
+        }
+    };
 
     // 添加处理联机方式变化的函数
     window.handleConnectionTypeChange = function(select) {
