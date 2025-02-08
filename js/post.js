@@ -51,7 +51,7 @@ export function resetPostForm() {
 }
 
 // 独立版本选择处理
-function handleVersionSelect() {
+export function handleVersionSelect() {
     const select = document.getElementById('version');
     return select.value === '其他' ? 
         prompt('请输入自定义版本') : 

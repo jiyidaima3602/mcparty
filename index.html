@@ -4,13 +4,6 @@
     <meta charset="UTF-8">
     <title>发布Minecraft联机帖子</title>
     <link rel="stylesheet" href="style.css">
-    <script type="importmap">
-    {
-        "imports": {
-            "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
-        }
-    }
-    </script>
     <script type="module" src="js/supabase.js"></script>
     <script type="module" src="js/post.js"></script>
 </head>
@@ -159,5 +152,10 @@
             <button onclick="window.location.href='browse.html'">浏览帖子</button>
         </div>
     </div>
+    <script type="module">
+        // 在入口文件配置Supabase
+        import { supabaseClient } from './js/supabase.js';
+        window.supabase = supabaseClient;
+    </script>
 </body>
 </html>

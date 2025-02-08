@@ -21,17 +21,15 @@ if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KE
 
 import { createClient } from '@supabase/supabase-js';
 
-// 从环境变量读取配置
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// 移除Vite环境变量依赖，改为直接配置
+const supabaseConfig = {
+    url: "https://jzpcrdvffrpdyuetbefb.supabase.co",
+    key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNyZHZmZnJwZHl1ZXRiZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5MzY1MzQsImV4cCI6MjA1NDUxMjUzNH0.0IRrxVdeKtbrfFyku0CvXsyeAtYp1mXXxLvyEQ6suTM"
+};
 
-// 添加环境变量验证
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(`
-    Supabase配置缺失！请检查是否在.env.local文件中设置了：
-    VITE_SUPABASE_URL=您的Supabase_URL
-    VITE_SUPABASE_ANON_KEY=您的公开anon密钥
-  `);
+// 添加配置验证
+if (!supabaseConfig.url || !supabaseConfig.key) {
+    throw new Error("Supabase配置信息不完整，请检查数据库连接配置");
 }
 
-export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey); 
+export const supabaseClient = createClient(supabaseConfig.url, supabaseConfig.key); 
