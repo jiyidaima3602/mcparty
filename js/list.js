@@ -83,6 +83,10 @@ export function renderPost(post) {
         <div><strong>联系方式：</strong>${post.contact || '未提供'}</div>
         <div><strong>留存时间：</strong>${post.retention_time}天</div>
       </div>
+      <div class="post-content">
+        <p><strong>帖子ID:</strong> ${post.id}</p>
+        ${post.content}
+      </div>
       ${post.playstyles ? `
       <div class="playstyle-tags">
         ${post.playstyles.split(', ').map(style => `<span class="tag">${style}</span>`).join('')}
