@@ -151,7 +151,7 @@ function updateFilters() {
 // 功能：多维度联合筛选
 // 依赖：所有check*函数
 // ======================
-export async function filterPosts() {
+async function filterPosts() {
     try {
         const posts = await fetchPostsFromSupabase();
         const filtered = posts.filter(post => {
@@ -240,7 +240,7 @@ export function bindSearchEvents() {
     document.getElementById('searchButton')?.addEventListener('click', filterPosts);
 }
 
-// 修改后的导出块
+// 文件底部统一导出
 export { 
     filterPosts
 }; 
