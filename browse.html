@@ -5,7 +5,6 @@
     <title>浏览Minecraft联机帖子</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://alcdn.msauth.net/browser/2.24.0/js/msal-browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
@@ -141,17 +140,7 @@
     <!-- 恢复帖子容器 -->
     <div class="posts-container" id="postsList"></div>
 
-    <script type="module">
-        import { loadPosts, bindGlobalEvents } from './js/list.js';
-        import { bindSearchEvents } from './js/filter.js';
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPosts();
-            bindSearchEvents();
-            bindGlobalEvents();
-        });
-    </script>
-
+    <script type="module" src="/js/list.js"></script>
     <script type="module" src="/js/interaction.js"></script>
     <script type="module" src="/js/post.js"></script>
   

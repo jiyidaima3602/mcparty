@@ -1,4 +1,5 @@
-import { supabaseClient, SUPABASE_KEY } from './supabase.js';
+import { supabaseClient } from './supabase.js';
+import { SUPABASE_KEY } from './supabase.js';
 import { fetchPostsFromSupabase } from './form.js';
 import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js';
 
