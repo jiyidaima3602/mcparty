@@ -99,8 +99,11 @@ function initPostInteractions() {
     initInteractions();
 }
 
-// 修改全局事件绑定函数
+// 修改全局事件绑定方式
 export function bindGlobalEvents() {
+    // 移除旧的监听器避免重复绑定
+    document.body.removeEventListener('click', handleGlobalClick); 
+    // 添加新监听器
     document.body.addEventListener('click', handleGlobalClick);
 }
 

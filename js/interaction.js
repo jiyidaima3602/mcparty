@@ -119,13 +119,16 @@ export function handleGlobalClick(event) {
     // 处理返回按钮
     if(event.target.closest('.back-btn')) {
         history.back();
+        return;
     }
     
     // 处理删除按钮
-    if (event.target.closest('.delete-btn')) {
-        const postId = event.target.dataset.id;
+    const deleteBtn = event.target.closest('.delete-btn');
+    if (deleteBtn) {
+        event.stopImmediatePropagation(); // 阻止其他监听器
+        const postId = deleteBtn.dataset.id;
         handleDeletePost(postId);
-        return; // 阻止事件冒泡
+        return false;
     }
 }
 
