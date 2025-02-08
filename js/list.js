@@ -82,6 +82,9 @@ export function renderPost(post) {
         <div><strong>游戏类型：</strong>${post.game_type || '未填写'}</div>
         <div><strong>联系方式：</strong>${post.contact || '未提供'}</div>
         <div><strong>留存时间：</strong>${post.retention_time}天</div>
+        <div><strong>游戏版本：</strong>${post.version || '未填写'}</div>
+        <div><strong>保存类型：</strong>${post.save_type || '未填写'}</div>
+        <div><strong>加载器：</strong>${post.loader || '未填写'}</div>
       </div>
       <div class="post-content">
         ${post.content}

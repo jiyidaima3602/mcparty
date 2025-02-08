@@ -741,6 +741,13 @@ select[multiple] {
   border-radius: 6px;
 }
 
+.meta-grid div {
+    padding: 5px;
+    background: #fff;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
 /* 移动端适配 */
 @media (max-width: 480px) {
     .post-actions {
