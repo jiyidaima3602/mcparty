@@ -1,4 +1,4 @@
-import { supabaseClient, SUPABASE_KEY } from '/js/supabase.js';
+import { supabaseClient } from '/js/supabase.js';
 
 /**
  * @file 表单处理模块，包含表单验证和提交逻辑
