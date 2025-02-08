@@ -4,7 +4,7 @@ import { formatTime } from './utils.js';
 import { initSelectAllCheckboxes } from './filter.js';
 import { initInteractions } from './interaction.js';
 import { filterPosts } from './filter.js';
-import { checkAdminAuth } from './admin.js';
+
 
 /**
  * @file 帖子列表渲染模块，负责列表展示和基础交互
